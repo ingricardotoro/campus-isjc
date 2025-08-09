@@ -11,9 +11,19 @@ const CourseGridFiveCardEvent = ( event : IEvent) => {
                     <div className="bd-course-thumb-wrapper p-relative mb-20">
                         <Link href={`event/event-details/${event.id}`}>
                             <div className="bd-course-thumb">
-                                <Image src={event.image} alt="image" />
+                                {event.image && (
+                                    <Image src={event.image} alt="image" />
+                                )}
                             </div>
-                            <div className="shape">{event.shape && <Image style={{ width: "auto", height: "auto" }} src={event.shape} alt="shape" />}</div>
+                            <div className="shape">
+                                {event.shape && (
+                                    <Image
+                                        style={{ width: "auto", height: "auto" }}
+                                        src={event.shape}
+                                        alt="shape"
+                                    />
+                                )}
+                            </div>
                         </Link>
                     </div>
                     <div className="bd-course-content mb-20">
