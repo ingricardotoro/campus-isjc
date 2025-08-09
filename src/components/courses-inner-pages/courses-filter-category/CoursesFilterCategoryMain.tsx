@@ -50,7 +50,14 @@ const CoursesFilterCategoryMain = () => {
                                             <motion.div
                                                 key={course.id}
                                                 className='col-xl-4 col-lg-6 col-md-6'
-                                                variants={containerVariants}
+                                                variants={{
+                                                    hidden: { opacity: 0, y: 50 },
+                                                    visible: {
+                                                        opacity: 1,
+                                                        y: 0,
+                                                        transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] },
+                                                    },
+                                                }}
                                                 initial="hidden"
                                                 animate="visible"
                                             >
