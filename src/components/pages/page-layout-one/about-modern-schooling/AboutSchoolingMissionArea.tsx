@@ -2,8 +2,8 @@ import Image from 'next/image';
 import React from 'react';
 //import modernMissionImg from '../../../../../public/assets/images/mission/modern-mission.webp';
 import modernMissionImg from '../../../../../public/assets/images/mission/elecciones3.jpg';
-import counterData from '@/data/counter-data';
-import CountUpContent from '@/components/common/counter/CountUpContent';
+// import counterData from '@/data/counter-data';
+// import CountUpContent from '@/components/common/counter/CountUpContent';
 import UniversityCounterSection from '@/components/university/UniversityCounterSection';
 
 const AboutSchoolingMissionArea = () => {

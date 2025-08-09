@@ -1,15 +1,15 @@
 "use client"
-import Breadcrumbs from '@/components/common/Breadcrumb/Breadcrumbs';
+// import Breadcrumbs from '@/components/common/Breadcrumb/Breadcrumbs';
 import CourseFilter from '@/components/common/course-filtering/CourseFilter';
-import Link from 'next/link';
+// import Link from 'next/link';
 import React from 'react';
 import CourseGridFiveCard from './CourseGridFiveCard';
 import coursesData from '@/data/courses/courses-data';
 import useGlobalContext from '@/hooks/useContexts';
-import { eventData } from '@/data/events-data';
+// import { eventData } from '@/data/events-data';
 
 const CourseGridFiveMainHome = () => {
-    const { toggleOpen } = useGlobalContext();
+    const { /* toggleOpen */ } = useGlobalContext();
     return (
         <>
              {/*<Breadcrumbs breadcrumbTitle='Course Grid Style 05' />
