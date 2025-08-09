@@ -1,8 +1,8 @@
-import AboutCtaArea from '@/components/common/about-cta/AboutCtaArea';
-import Breadcrumbs from '@/components/common/Breadcrumb/Breadcrumbs';
-import Image from 'next/image';
+// import AboutCtaArea from '@/components/common/about-cta/AboutCtaArea';
+// import Breadcrumbs from '@/components/common/Breadcrumb/Breadcrumbs';
+// import Image from 'next/image';
 import React from 'react';
-import faqShape from '../../../../../public/assets/images/faq/faq-shape.png';
+// import faqShape from '../../../../../public/assets/images/faq/faq-shape.png';
 
 const RequisitosArea = () => {
     return (
@@ -53,7 +53,7 @@ const RequisitosArea = () => {
                                                                     <li>Constancia de Solvencia de Kinder de Procedencia.</li>
                                                                 </ul>
                                                             </div>
-                                                        </div>
+                                                        </div>       
                                                     </div>
                                                     {/* -- Question 3 -- */}
                                                     <div className="accordion-item">
