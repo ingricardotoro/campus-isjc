@@ -95,10 +95,18 @@ const UniversityProgrammeArea = () => {
                             <motion.div
                                 key={index}
                                 className="col-xl-4 col-lg-6 col-md-6 col-sm-6 grid-item cat1"
-                                variants={containerVariants}
+                                //variants={containerVariants}
+                                variants={{
+                                    hidden: { opacity: 0, y: 50 },
+                                    visible: {
+                                        opacity: 1,
+                                        y: 0,
+                                        transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] },
+                                    },
+                                }}
                                 initial="hidden"
                                 animate="visible"
-                                exit={{ opacity: 0, y: 20 }}
+                                exit={{ opacity: 0, y: 20, transition: { duration: 0.5, ease: [0.42, 0, 0.58, 1] as [number, number, number, number] } }}
                             >
                                 <div className="bd-course-wrapper style-six">
                                     {/* Program Card - Link to program details */}
