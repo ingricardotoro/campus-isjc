@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+// import Link from 'next/link';
 import React from 'react';
 import breadcrumbShapeOne from '../../../../public/assets/images/shape/breadcrumb-shape-1.webp';
 import breadcrumbShapeTwo from '../../../../public/assets/images/shape/breadcrumb-shape-2.webp';
@@ -7,9 +7,9 @@ import breadcrumbShapeTwo from '../../../../public/assets/images/shape/breadcrum
 import breadcrumbBg from '../../../../public/assets/images/breadcrumb/media3.png'
 
 interface breadCrumbType{
-    breadcrumbTwoTitle:string
+    breadcrumbTwoTitle?:string
 }
-const BreadcrumbsCalendarizacion = ({breadcrumbTwoTitle}:breadCrumbType) => {
+const BreadcrumbsCalendarizacion = ({}:breadCrumbType) => {
     return (
         <>
             <section className="bd-breadcrumb-area p-relative fix z-index-11">

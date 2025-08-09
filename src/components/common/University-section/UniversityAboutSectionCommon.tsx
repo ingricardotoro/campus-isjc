@@ -6,7 +6,7 @@ import circleShapeTwo from '../../../../public/assets/images/shape/about-circle-
 import bookShape from '../../../../public/assets/images/shape/book-2.webp';
 import thumbOracion from '../../../../public/assets/images/about/pentecostes4_2.jpg';
 import thumbStudent from '../../../../public/assets/images/about/viacrucis4_2.jpg';
-import thumbShapeThree from '../../../../public/assets/images/about/about-thumb-03.webp';
+// import thumbShapeThree from '../../../../public/assets/images/about/about-thumb-03.webp';
 import userImage from '../../../../public/assets/images/user/user-01.webp';
 import Link from 'next/link';
 import CountUpContent from '../counter/CountUpContent';

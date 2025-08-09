@@ -6,7 +6,7 @@ import React from 'react';
 import CourseGridFiveCard from './CourseGridFiveCard';
 import coursesData from '@/data/courses/courses-data';
 import useGlobalContext from '@/hooks/useContexts';
-import CourseGridFiveCardEvent from './CourseGridFiveCardEvent';
+// import CourseGridFiveCardEvent from './CourseGridFiveCardEvent';
 
 const CourseGridFiveMain = () => {
     const { toggleOpen } = useGlobalContext();
