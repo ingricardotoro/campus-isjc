@@ -4,7 +4,7 @@ import eventImg2 from "../../public/assets/images/event/event-img-2.webp";
 import eventImg3 from "../../public/assets/images/event/event-img-3.webp";
 import eventImg4 from "../../public/assets/images/event/event-img-4.webp";
 import eventImg5 from "../../public/assets/images/event/event-img-5.webp";
-import eventImg6 from "../../public/assets/images/event/event-img-6.webp";
+// import eventImg6 from "../../public/assets/images/event/event-img-6.webp";
 import eventThumb1 from "../../public/assets/images/event/event-thumb-09.webp";
 import eventThumb2 from "../../public/assets/images/event/event-thumb-06.webp";
 import eventThumb3 from "../../public/assets/images/event/event-thumb-07.webp";

@@ -92,7 +92,7 @@ import courseThreeBg7 from "../../../public/assets/images/course/course-3-bg-7.w
 import courseThreeBg8 from "../../../public/assets/images/course/course-3-bg-8.webp";
 import courseThreeBg9 from "../../../public/assets/images/course/course-3-bg-9.webp";
 //program image
-import homeProgramImg1 from "../../../public/assets/images/program/home-program-1.webp";
+// import homeProgramImg1 from "../../../public/assets/images/program/home-program-1.webp";
 import homeProgramImg2 from "../../../public/assets/images/program/home-program-2.webp";
 import homeProgramImg3 from "../../../public/assets/images/program/home-program-3.webp";
 import homeProgramImg4 from "../../../public/assets/images/program/home-program-4.webp";
@@ -100,7 +100,7 @@ import homeProgramImg5 from "../../../public/assets/images/program/home-program-
 import homeProgramImg6 from "../../../public/assets/images/program/home-program-6.webp";
 import courseShape from "../../../public/assets/images/shape/course-shape.webp";
 
-import FeriaReciclajeImage from "../../../public/assets/images/course/feria_reciclaje.jpg";
+// import FeriaReciclajeImage from "../../../public/assets/images/course/feria_reciclaje.jpg";
 
 
 // quarn learning image

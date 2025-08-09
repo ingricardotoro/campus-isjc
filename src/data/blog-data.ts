@@ -9,7 +9,7 @@ import blogImg6 from "../../public/assets/images/blog/blog-thumb-06.webp";
 //modern scholling image
 import blogImg7 from "../../public/assets/images/blog/blog-thumb-07.webp";
 import blogImg8 from "../../public/assets/images/blog/blog-thumb-08.webp";
-import blogImg9 from "../../public/assets/images/blog/blog-thumb-09.webp";
+// import blogImg9 from "../../public/assets/images/blog/blog-thumb-09.webp";
 //shop blog image
 import blogImg10 from "../../public/assets/images/blog/blog-thumb-23.webp";
 import blogImg11 from "../../public/assets/images/blog/blog-thumb-20.webp";
@@ -41,8 +41,8 @@ import reciclaje from "../../public/assets/images/course/reciclaje4_2.jpg";
 
 
 import matematicas from "../../public/assets/images/course/math4.jpg";
-import science3 from "../../public/assets/images/course/pentecostes2_2.jpg";
-import reciclaje2 from "../../public/assets/images/course/reciclaje2.jpg";
+// import science3 from "../../public/assets/images/course/pentecostes2_2.jpg";
+// import reciclaje2 from "../../public/assets/images/course/reciclaje2.jpg";
 
 
 

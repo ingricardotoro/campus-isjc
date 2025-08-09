@@ -2,7 +2,7 @@ import React from 'react';
 import UniversityBannerSection from './UniversityBannerSection';
 import UniversityFeatureSection from './UniversityFeatureSection';
 import UniversityCounterSection from './UniversityCounterSection';
-import UniversityProgrammeArea from './UniversityProgrammeArea';
+// import UniversityProgrammeArea from './UniversityProgrammeArea';
 import UniversityBrandSection from './UniversityBrandSection';
 import UniversityTestimonialArea from '../sliders/testimonial/UniversityTestimonialArea';
 import UniversityVideoSection from './UniversityVideoSection';
