@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
-import topyloImg from '../../../public/assets/images/landing-page/topylo.png';
-import Image from 'next/image';
+//import topyloImg from '../../../public/assets/images/landing-page/topylo.png';
+//import Image from 'next/image';
 import { getCurrentYear } from '@/utils/dateUtils';
 import footerBgImg from "../../../public/assets/images/bg/error-bg.webp";
 import { Parallax } from 'react-parallax';

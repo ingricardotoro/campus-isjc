@@ -1,13 +1,13 @@
 
 import { MenuItem } from "@/interFace/interFace";
-import homeOneImg from "../../../public/assets/images/menu/menu-home-1.webp";
-import homeTowImg from "../../../public/assets/images/menu/menu-home-2.webp";
-import homeThreeImg from "../../../public/assets/images/menu/menu-home-3.webp";
-import homeFourImg from "../../../public/assets/images/menu/menu-home-4.webp";
-import homeFiveImg from "../../../public/assets/images/menu/menu-home-5.webp";
-import homeSixImg from "../../../public/assets/images/menu/menu-home-6.webp";
-import homeSevenImg from "../../../public/assets/images/menu/menu-home-7.webp";
-import coummingSoonImg from "../../../public/assets/images/menu/menu-home-soon.webp";
+// import homeOneImg from "../../../public/assets/images/menu/menu-home-1.webp";
+// import homeTowImg from "../../../public/assets/images/menu/menu-home-2.webp";
+// import homeThreeImg from "../../../public/assets/images/menu/menu-home-3.webp";
+// import homeFourImg from "../../../public/assets/images/menu/menu-home-4.webp";
+// import homeFiveImg from "../../../public/assets/images/menu/menu-home-5.webp";
+// import homeSixImg from "../../../public/assets/images/menu/menu-home-6.webp";
+// import homeSevenImg from "../../../public/assets/images/menu/menu-home-7.webp";
+// import coummingSoonImg from "../../../public/assets/images/menu/menu-home-soon.webp";
 
 const main_menu_data: MenuItem[] = [
   {

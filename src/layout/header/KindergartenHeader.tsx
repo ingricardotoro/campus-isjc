@@ -8,10 +8,10 @@ import HeaderSearch from './component/HeaderSearch';
 import SidebarCart from '@/components/common/sidebar-cart/SidebarCart';
 import SidebarMenu from '../sidebar/SidebarMenu';
 import useGlobalContext from '@/hooks/useContexts';
-import useCart from '@/hooks/useCart';
+// import useCart from '@/hooks/useCart';
 
 const KindergartenHeader = () => {
-    const { scrollDirection, toggleSidebarMenu } = useGlobalContext();
+    const { scrollDirection } = useGlobalContext();
     const [openCart, setOpenCart] = useState(false)
     //cart quantity
     // const { getCartProductQuantity } = useCart();
