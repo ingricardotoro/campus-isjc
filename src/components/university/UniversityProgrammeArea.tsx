@@ -38,14 +38,14 @@ const UniversityProgrammeArea = () => {
     };
 
     // Animation variants for the program card container
-    const containerVariants = {
+    /* const containerVariants = {
         hidden: { opacity: 0, y: 50 },
         visible: {
             opacity: 1,
             y: 0,
             transition: { duration: 0.5, ease: "easeOut" },
         },
-    };
+    }; */
 
     return (
         <section className="bd-program-area section-space-bottom">
