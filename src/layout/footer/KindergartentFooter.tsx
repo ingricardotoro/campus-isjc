@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import logoWhite from '../../../public/assets/images/logo/logo_isj_2.png';
-import Logo from '../../../public/assets/images/logo/logo.png';
+//import Logo from '../../../public/assets/images/logo/logo.png';
 import { getCurrentYear } from '@/utils/dateUtils';
 interface ISubFooter {
     href: string,
@@ -86,13 +86,13 @@ const KindergartenFooter = () => {
         { label: 'Empleo', href: '/empleo' },
     ];
 
-    const programs = [
-        { href: "/kindergarten-program-details", label: "Play School" },
-        { href: "/kindergarten-program-details", label: "Nursery" },
-        { href: "/kindergarten-program-details", label: "Senior Kg" },
-        { href: "/kindergarten-program-details", label: "Junior Kg" },
-        { href: "/kindergarten-program-details", label: "Day Care" }
-    ];
+    // const programs = [
+    //     { href: "/kindergarten-program-details", label: "Play School" },
+    //     { href: "/kindergarten-program-details", label: "Nursery" },
+    //     { href: "/kindergarten-program-details", label: "Senior Kg" },
+    //     { href: "/kindergarten-program-details", label: "Junior Kg" },
+    //     { href: "/kindergarten-program-details", label: "Day Care" }
+    // ];
 
     return (
         <footer>

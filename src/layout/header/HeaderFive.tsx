@@ -9,19 +9,16 @@ import SidebarMenu from '../sidebar/SidebarMenu';
 import CommonHeaderMainMenu from './component/MainMenu';
 import CategoryDropdown from './component/CategoryDropdown';
 import useGlobalContext from '@/hooks/useContexts';
-import useCart from '@/hooks/useCart';
+//import useCart from '@/hooks/useCart';
 
 const HeaderFive = () => {
     const { scrollDirection, toggleSidebarMenu } = useGlobalContext();
     const [openCart, setOpenCart] = useState(false)
     //cart quantity
-    const { getCartProductQuantity } = useCart();
-    const TotalCartQuantity = getCartProductQuantity();
+    //const { getCartProductQuantity } = useCart();
+    ///*  */const TotalCartQuantity = getCartProductQuantity();
     //search functionality
     const [openSearchField, setOpenSearchField] = useState<boolean>(false);
-    const handleSearchToggle = () => {
-        setOpenSearchField(!openSearchField);
-    };
 
     return (
         <>

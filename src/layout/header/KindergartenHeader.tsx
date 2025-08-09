@@ -14,13 +14,13 @@ const KindergartenHeader = () => {
     const { scrollDirection, toggleSidebarMenu } = useGlobalContext();
     const [openCart, setOpenCart] = useState(false)
     //cart quantity
-    const { getCartProductQuantity } = useCart();
-    const TotalCartQuantity = getCartProductQuantity();
+    // const { getCartProductQuantity } = useCart();
+    // const TotalCartQuantity = getCartProductQuantity();
     //search functionality
     const [openSearchField, setOpenSearchField] = useState<boolean>(false);
-    const handleSearchToggle = () => {
-        setOpenSearchField(!openSearchField);
-    };
+    // const handleSearchToggle = () => {
+    //     setOpenSearchField(!openSearchField);
+    // };
 
     return (
         <>
@@ -40,10 +40,10 @@ const KindergartenHeader = () => {
                         </div>
                         {/* <div className="bd-header-right justify-content-end">
                             <div className="bd-header-meta has-white">
-                                <button onClick={handleSearchToggle} className="bd-search-open-btn meta-icon" type="button"><i
+                                <button className="bd-search-open-btn meta-icon" type="button"><i
                                     className="fa-regular fa-magnifying-glass"></i></button>
                                 <button onClick={() => setOpenCart(true)} className="cartmini-open-btn meta-icon" type="button"><i
-                                    className="fa-regular fa-cart-shopping"></i><span className="item-number">{TotalCartQuantity}</span></button>
+                                    className="fa-regular fa-cart-shopping"></i></button>
                             </div>
                             <div className="bd-header-sign-btn">
                                 <Link className="bd-btn btn-outline-border-secondary h-40px" href="#">Find Courses</Link>

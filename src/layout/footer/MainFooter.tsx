@@ -2,8 +2,8 @@ import { getCurrentYear } from '@/utils/dateUtils';
 import Link from 'next/link';
 import React, { ReactNode } from 'react';
 import Logo from '../../../public/assets/images/logo/logo.png';
-import playStore from '../../../public/assets/images/icon/play-store.webp';
-import appStore from '../../../public/assets/images/icon/app-store.webp';
+// import playStore from '../../../public/assets/images/icon/play-store.webp';
+// import appStore from '../../../public/assets/images/icon/app-store.webp';
 import Image from 'next/image';
 interface MainFooterProps {
     children?: ReactNode;

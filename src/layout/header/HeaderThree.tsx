@@ -5,23 +5,23 @@ import headerLogo from "../../../public/assets/images/logo/logo.png";
 import Image from 'next/image';
 import HeaderSearch from './component/HeaderSearch';
 import SidebarCart from '@/components/common/sidebar-cart/SidebarCart';
-import UniversityHeaderMenu from './component/UniversityHeaderMenu';
+//import UniversityHeaderMenu from './component/UniversityHeaderMenu';
 import UniversitySidebar from '../sidebar/UniversitySidebar';
 import useGlobalContext from '@/hooks/useContexts';
-import useCart from '@/hooks/useCart';
+//import useCart from '@/hooks/useCart';
 import CommonHeaderMainMenu from './component/MainMenu';
 
 const HeaderThree = () => {
-    const { toggleSidebarMenu, scrollDirection } = useGlobalContext();
+    const { scrollDirection } = useGlobalContext();
     const [openCart, setOpenCart] = useState(false)
     //cart quantity
-    const { getCartProductQuantity } = useCart();
-    const TotalCartQuantity = getCartProductQuantity();
+    //const { getCartProductQuantity } = useCart();
+    //const TotalCartQuantity = getCartProductQuantity();
     //search functionality
     const [openSearchField, setOpenSearchField] = useState<boolean>(false);
-    const handleSearchToggle = () => {
+    /* const handleSearchToggle = () => {
         setOpenSearchField(!openSearchField);
-    };
+    }; */
 
     return (
         <>
