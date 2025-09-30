@@ -16,11 +16,13 @@ import HeaderFive from "./header/HeaderFive";
 import CommonFooter from "./footer/CommonFooter";
 import KindergartentFooter from "./footer/KindergartentFooter";
 import KindergartenHeader from "./header/KindergartenHeader";
+import ElementaryHeader from "./header/ElementaryHeader";
 //import QuranLearningHeader from "./header/QuranLearningHeader";
 //import QuranLearningFooter from "./footer/QuranLearningFooter";
 //import LanguageAcademyHeader from "./header/LanguageAcademyHeader";
 import Preloader from "@/components/common/preloader/Preloader";
 import WOW from 'wow.js';
+import HighSchoolHeader from "./header/HighSchoolHeader";
 
 interface WrapperProps {
   children: React.ReactNode;
@@ -65,6 +67,8 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
     "/online-course": <HeaderTwo />,
     */
     "/kindergarten": <KindergartenHeader />,
+    "/elementary": <ElementaryHeader />,
+    "/highschool": <HighSchoolHeader />,
     /*
     "/kindergarten-program-details": <KindergartenHeader />,
     "/quran-learning": <QuranLearningHeader />,

@@ -1,6 +1,5 @@
-import { ICategories, ISchoolinCategories } from "@/interFace/interFace";
+import { ICategories, IPrinciplesCategories, ISchoolinCategories } from "@/interFace/interFace";
 // Importing the SVG components
-import ArtsDesignSvg from "@/svg/categories/modern-schooling/ArtsDesignSvg";
 import WebDevelopmentSvg from "@/svg/categories/modern-schooling/WebDevelopmentSvg";
 import PhotographySvg from "@/svg/categories/modern-schooling/PhotographySvg";
 import BusinessAnalysisSvg from "@/svg/categories/modern-schooling/BusinessAnalysisSvg";
@@ -12,6 +11,68 @@ import RoboticsAISvg from "@/svg/categories/modern-schooling/RoboticsAISvg";
 import PsychologySvg from "@/svg/categories/modern-schooling/PsychologySvg";
 import CookingBakingSvg from "@/svg/categories/modern-schooling/CookingBakingSvg";
 import FinanceSvg from "@/svg/categories/modern-schooling/FinanceSvg";
+
+import ArtsDesignSvg from "@/svg/categories/modern-schooling/ArtsDesignSvg";
+
+
+import SpiritualSvg from "@/svg/categories/modern-schooling/ChurchSvg.svg";
+import JusticeSvg from "@/svg/categories/modern-schooling/JusticeSvg.svg";
+import HonourSvg from "@/svg/categories/modern-schooling/HonourSvg.svg";
+import IntegritySvg from "@/svg/categories/modern-schooling/IntegritySvg.svg";
+import LeadershipSvg from "@/svg/categories/modern-schooling/LeadershipSvg.svg";
+
+
+
+export const principlesCategories: IPrinciplesCategories[] = [
+    {
+        id: 1,
+        title: "Fe y Espiritualidad",
+        totalCourses: 12,
+        icon: SpiritualSvg
+    },
+    {
+        id: 2,
+        title: "Justicia y Equidad",
+        totalCourses: 18,
+        icon: JusticeSvg
+    },
+    {
+        id: 3,
+        title: "Respeto y Empatía",
+        totalCourses: 15,
+        icon: HonourSvg
+    },
+    {
+        id: 4,
+        title: "Honestidad e Integridad",
+        totalCourses: 20,
+        icon: IntegritySvg
+    },
+    {
+        id: 5,
+        title: "Responsabilidad y Liderazgo",
+        totalCourses: 16,
+        icon: LeadershipSvg
+    },
+    {
+        id: 6,
+        title: "Excelencia Académica",
+        totalCourses: 22,
+        icon: SpiritualSvg
+    },
+    {
+        id: 7,
+        title: "Servicio y Solidaridad",
+        totalCourses: 14,
+        icon: SpiritualSvg
+    },
+    {
+        id: 8,
+        title: "Creatividad y Pensamiento Crítico",
+        totalCourses: 19,
+        icon: SpiritualSvg
+    }
+];
 
 export const categoriesData: ICategories[] = [
     //Course Online categories data start

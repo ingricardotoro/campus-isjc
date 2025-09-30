@@ -6,7 +6,7 @@ import Link from "next/link";
 const CommonHeaderMainMenu = () => {
 
   return (
-    <>
+    
       <ul>
         {main_menu_data.map((item) => (
           <li
@@ -94,7 +94,7 @@ const CommonHeaderMainMenu = () => {
           </li>
         ))}
       </ul>
-    </>
+
   );
 };
 

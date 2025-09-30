@@ -7,7 +7,7 @@ import shape2 from '../../../public/assets/images/banner/banner-1/shape-2.webp';
 import shape3 from '../../../public/assets/images/banner/banner-1/shape-3.webp';
 import shape4 from '../../../public/assets/images/banner/banner-1/shape-4.webp';
 import shape5 from '../../../public/assets/images/banner/banner-1/shape-5.webp';
-import bannerImg from '../../../public/assets/images/banner/banner-1/elementary_child.png';
+import bannerImg from '../../../public/assets/images/banner/banner-1/elementary_child.png'; // Usando la misma imagen por ahora
 import dotShape from '../../../public/assets/images/shape/dot-shape.webp';
 import badgeImg from '../../../public/assets/images/shape/badge.webp';
 import badgeImgTwo from '../../../public/assets/images/shape/badge-img.webp';
@@ -45,18 +45,18 @@ const BannerSectionOne = () => {
                                 <div className="bd-banner-one-content">
                                   
                                     <h1 className="bd-banner-title small mb-20">Bienvenido al área de<span className="bd-title-underline text-secondary">
-                                        Educación Básica <br /> 
+                                        Educación Media <br /> 
                                         <svg width="138" height="8" viewBox="0 0 138 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M1 7C28.2975 2.83975 94.8839 -1.83253 137 3.15976" stroke="#FFAF00"
                                                 strokeWidth="2" />
                                         </svg> 
-                                    </span><br /> 1ro a 9no grado </h1>
+                                    </span><br /> 10mo a 12vo grado </h1>
                                     <p className="bd-banner-description">
-                                        Puede confiar la educación de sus hijos en nuestras manos. Brindamos un ambiente seguro y de calidad para su desarrollo académico, artístico y espiritual.
+                                        Formamos líderes con excelencia académica y valores cristianos, preparados para enfrentar los desafíos universitarios y profesionales en un entorno globalizado.
                                     </p>
                                     <ul className="bd-banner-subtitle-list">
-                                        <li >Totalmente Bilingüe de 1ro a 9no grado</li>
-                                        <li >Modalidad Español de 7mo a 9no grado</li>
+                                        <li >Bachillerato en Ciencias y Humanidades</li>
+                                        <li >Educación Bilingüe de alto nivel</li>
                                     </ul>
                                     <br />
                                     <div className="bd-banner-btn d-flex-items flex-wrap gap-30">
@@ -81,9 +81,9 @@ const BannerSectionOne = () => {
                                                     <Image src={badgeImg} style={{ width: "100%", height: "auto" }} priority alt="shape" />
                                                 </div>
                                                 <div className="content">
-                                                    <div className="title">100%</div>
+                                                    <div className="title">95%</div>
                                                     <div className="subtitle">
-                                                        Satisfied Learner
+                                                        Aprobación Universitaria
                                                     </div>
                                                 </div>
                                             </div>
@@ -95,9 +95,9 @@ const BannerSectionOne = () => {
                                                     <Image src={StarGroupImg} style={{ width: "100%", height: "auto" }} priority alt="shape" />
                                                 </div>
                                                 <div className="content">
-                                                    <div className="title">30K+</div>
+                                                    <div className="title">25+</div>
                                                     <div className="subtitle">
-                                                        Happy Student <br /> Worldwide
+                                                        Años de <br /> Experiencia
                                                     </div>
                                                 </div>
                                             </div>

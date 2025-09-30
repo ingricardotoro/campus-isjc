@@ -46,6 +46,14 @@ export interface MenuItem {
   lastDropdown?: boolean;
 }
 
+// Define an interface for principles categories data
+export interface IPrinciplesCategories {
+  id: number;
+  title: string;
+  totalCourses: number;
+  icon: string;
+}
+
 // Define an interface for the categories data
 export interface ICategories {
   id: number;

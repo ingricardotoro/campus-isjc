@@ -12,12 +12,11 @@ import { Navigation, A11y, EffectFade, Autoplay } from 'swiper/modules';
 
 const UniversityBannerSection = () => {
     return (
-        <>
-            <section className="bd-banner-area">
-                <div className="swiper bdSliderActive p-relative">
-                    <Swiper
-                        modules={[Navigation, A11y, EffectFade, Autoplay]}
-                        spaceBetween={50}
+        <section className="bd-banner-area">
+            <div className="swiper bdSliderActive p-relative">
+                <Swiper
+                    modules={[Navigation, A11y, EffectFade, Autoplay]}
+                    spaceBetween={50}
                         slidesPerView={1}
                         autoplay={{
                             delay:5000,
@@ -188,10 +187,10 @@ const UniversityBannerSection = () => {
                         </div>
                     </div>
                     {/* <!-- navigation button end --> */}
+                  
                 </div>
             </section>
-        </>
+        
     );
 };
-
 export default UniversityBannerSection;

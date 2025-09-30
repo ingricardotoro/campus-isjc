@@ -1,0 +1,137 @@
+/* Estilos para la sección de empleos */
+
+/* Tarjetas de trabajos */
+.bd-job-card {
+    padding: 30px;
+    border-radius: 10px;
+    background-color: var(--bd-grey-color);
+    transition: all 0.3s ease;
+    height: 100%;
+    
+    &:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+    
+    .bd-job-card-icon {
+        font-size: 40px;
+        color: var(--bd-theme-color);
+        margin-bottom: 15px;
+    }
+    
+    .bd-job-card-content {
+        h4 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        
+        ul {
+            padding-left: 0;
+            list-style: none;
+            
+            li {
+                padding: 5px 0;
+                position: relative;
+                padding-left: 15px;
+                
+                &:before {
+                    content: "•";
+                    color: var(--bd-theme-color);
+                    position: absolute;
+                    left: 0;
+                }
+            }
+        }
+    }
+}
+
+/* Listas de requisitos y beneficios */
+.bd-job-requirements-list,
+.bd-job-benefits-list {
+    padding-left: 0;
+    list-style: none;
+    
+    li {
+        padding: 8px 0;
+        position: relative;
+        padding-left: 25px;
+        
+        i {
+            color: var(--bd-theme-color);
+            position: absolute;
+            left: 0;
+            top: 10px;
+        }
+    }
+}
+
+.bd-job-benefits-list {
+    li i {
+        color: #FFD700; /* Dorado para los beneficios */
+    }
+}
+
+/* Estilo para el formulario de aplicación */
+.bd-application-form-wrapper {
+    background-color: #F9F9F9;
+    padding: 40px;
+    border-radius: 10px;
+    
+    @media (max-width: 767px) {
+        padding: 20px;
+    }
+}
+
+.form-section-title {
+    font-size: 22px;
+    color: var(--bd-theme-color);
+    margin-bottom: 15px;
+}
+
+.bd-form-divider {
+    height: 1px;
+    width: 100%;
+    background-color: #E0E0E0;
+    margin: 20px 0;
+}
+
+/* Selector de archivos CV */
+input[type="file"] {
+    padding: 10px;
+    border: 1px dashed #ccc;
+    width: 100%;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+}
+
+/* Declaración */
+.bd-apply-declaration {
+    background-color: rgba(var(--bd-theme-rgb), 0.05);
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+    
+    .checkout-option {
+        display: flex;
+        align-items: flex-start;
+        
+        input[type="checkbox"] {
+            margin-top: 5px;
+            margin-right: 10px;
+        }
+    }
+}
+
+/* Botón de envío */
+.bd-apply-submit-btn {
+    .bd-btn {
+        padding: 15px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background-color: var(--bd-theme-color);
+            color: white;
+        }
+    }
+}

@@ -101,34 +101,27 @@ const main_menu_data: MenuItem[] = [
     pluseIncon: true,
     link: "#",
     submenus: [
+
       {
-        title: "Bilingue",
-        link: "#",
-        pluseIncon: true,
-        megaMenu: [
-          { title: "Pre-Basic", link: "/kindergarten" },
-          { title: "Elementary", link: "/elementary" },
-          { title: "High School", link: "/high-school" },
-        ]
+        title: "Pre-Básica",
+        link: "/kindergarten",
       },
+
       {
-        title: "Español",
-        pluseIncon: true,
-        link: "#",
-        megaMenu: [
-          { title: "Primaria (7 - 9)", link: "/primaria" },
-          { title: "Secundaria (10 y 11)", link: "/secundaria" },
-        ]
+        title: "Educ. Básica (1 - 9)",
+        link: "/elementary",
       },
+
       {
+        title: "Educ. Media (10 y 11)",
+        link: "/highSchool",
+      },
+
+    {
         title: "Polideportivo",
-        pluseIncon: true,
-        link: "#",
-        megaMenu: [
-          { title: "Academia Artes", link: "/academia-artes" },
-          { title: "Academia Deportes", link: "/academia-deportes" },
-        ]
+        link: "/polideportivo",
       },
+      
     ]
   },
   {
@@ -149,7 +142,7 @@ const main_menu_data: MenuItem[] = [
     active: true,
     title: "Empleo",
     pluseIncon: false,
-    link: "/empleo",
+    link: "/jobs",
   },
   {
     id: 6,
