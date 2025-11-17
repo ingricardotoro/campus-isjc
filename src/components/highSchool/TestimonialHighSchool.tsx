@@ -1,7 +1,7 @@
 "use client"
 import React from 'react';
 import Image from 'next/image';
-import testimonialBg from "../../../public/assets/images/bg/testimonial-bg-online-2.webp";
+import testimonialBg from "../../../public/assets/images/campus/secundaria1.jpg";
 import testimonialQuoteIcon from "../../../public/assets/images/shape/testimonial-quote-icon.webp";
 import highSchoolTestimonials from '@/data/highschool-testimonials';
 //swiper
@@ -18,7 +18,7 @@ const TestimonialHighSchool = () => {
             <section className="bd-testimonial-area p-relative theme-bg">
                 <div className="bd-testimonial-video" style={{ backgroundImage: `url(${testimonialBg.src})` }}>
                     <div className="bd-testimonial-video-btn animation-two">
-                        <button className="bd-play-btn popup-video" type='button' onClick={() => playVideo("INY3ETimTjg", "youtube")}>
+                        <button className="bd-play-btn popup-video" type='button' onClick={() => playVideo("vmvw3XYb3pA", "youtube")}>
                             <i className="fa-regular fa-play"></i>
                         </button>
                     </div>
@@ -83,9 +83,9 @@ const TestimonialHighSchool = () => {
                                                             </div>
                                                             <div className="bd-testimonial-meta d-flex-between">
                                                                 <div className="author">
-                                                                    <div className="thumb">
+                                                                   {/*  <div className="thumb">
                                                                         <Image src={item.avatar} style={{ width: "100%", height: "auto" }} alt="images" />
-                                                                    </div>
+                                                                    </div> */}
                                                                     <div className="details">
                                                                         <h6 className="name">{item.name}</h6>
                                                                         {item.designation && <span className="designation">{item.designation}</span>}

@@ -64,11 +64,11 @@ const main_menu_data: MenuItem[] = [
         pluseIncon: false,
       },
 
-      {
+     /*  {
         title: "Calendarizacion 2025",
-        link: "/calendarizacion",
+        link: "#",
         pluseIncon: false,
-      },
+      }, */
       
       {
         title: "Proyecto Carmelitano",
@@ -119,7 +119,7 @@ const main_menu_data: MenuItem[] = [
 
     {
         title: "Polideportivo",
-        link: "/polideportivo",
+        link: "https://www.facebook.com/polideportivoSJ",
       },
       
     ]

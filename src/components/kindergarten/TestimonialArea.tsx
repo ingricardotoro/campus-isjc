@@ -56,9 +56,9 @@ const TestimonialArea = () => {
                                             </div>
                                             <div className="bd-testimonial-avatar d-flex-between">
                                                 <div className="d-flex align-items-center gap-10">
-                                                    <div className="bd-testimonial-avatar-thumb">
+                                                    {/* <div className="bd-testimonial-avatar-thumb">
                                                         <Image style={{ width: "100%", height: "auto" }} src={testimonial.avatar} alt="avatar" />
-                                                    </div>
+                                                    </div> */}
                                                     <h6 className="name mb-0">{testimonial.name}</h6>
                                                 </div>
                                                 <div className="bd-testimonial-quote d-none d-sm-block clr-2">

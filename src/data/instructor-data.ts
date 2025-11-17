@@ -4,10 +4,10 @@ import instructorImg2 from "../../public/assets/images/instructor/instructor-thu
 import instructorImg3 from "../../public/assets/images/instructor/instructor-thumb-03.webp";
 import instructorImg4 from "../../public/assets/images/instructor/instructor-thumb-04.webp";
 
-import instructorImg5 from "../../public/assets/images/instructor/instructor-thumb-01.webp";
+/* import instructorImg5 from "../../public/assets/images/instructor/instructor-thumb-01.webp";
 import instructorImg6 from "../../public/assets/images/instructor/instructor-thumb-02.webp";
 import instructorImg7 from "../../public/assets/images/instructor/instructor-thumb-03.webp";
-import instructorImg8 from "../../public/assets/images/instructor/instructor-thumb-04.webp";
+import instructorImg8 from "../../public/assets/images/instructor/instructor-thumb-04.webp"; */
 import instructorImg9 from "../../public/assets/images/instructor/instructor-thumb-05.webp";
 import instructorImg10 from "../../public/assets/images/instructor/instructor-thumb-06.webp";
 import instructorImg11 from "../../public/assets/images/instructor/instructor-thumb-07.webp";
@@ -18,6 +18,10 @@ import musicaImg from "../../public/assets/images/instructor/misica1.png";
 import roboticaImg from "../../public/assets/images/instructor/robotica1.jpg";
 import religionImg from "../../public/assets/images/instructor/misa2.jpg";
 
+import secundaria1 from "../../public/assets/images/instructor/viajes.jpg";
+import secundaria2 from "../../public/assets/images/instructor/viajes2.jpg";
+import secundaria3 from "../../public/assets/images/instructor/social2.jpg";
+import secundaria4 from "../../public/assets/images/instructor/universidad.png";
 
 
 //about schoolign data
@@ -85,22 +89,22 @@ export const instructorsData: Iinstructor[] = [
   {
     id: 5,
     name: "Colleen Hoover",
-    image: instructorImg5
+    image: instructorImg1
   },
   {
     id: 6,
     name: "James Patterson",
-    image: instructorImg6
+    image: instructorImg2
   },
   {
     id: 7,
     name: "John Grisham",
-    image: instructorImg7
+    image: instructorImg3
   },
   {
     id: 8,
     name: "Nora Roberts",
-    image: instructorImg8
+    image: instructorImg4
   },
   {
     id: 9,
@@ -386,6 +390,56 @@ export const instructorsData: Iinstructor[] = [
     name: 'Sadik',
     title: 'Hafiz Mentor',
     image: instructorThumbEight,
+    socialLinks: {
+      facebook: 'https://www.facebook.com/',
+      twitter: 'https://x.com/',
+      linkedin: 'https://www.linkedin.com/feed/',
+      instagram: 'https://www.instagram.com/',
+    },
+  },
+
+//Areas especiales high school
+  {
+    id: 35,
+    name: 'Sadik',
+    title: 'Hafiz Mentor',
+    image: secundaria1,
+    socialLinks: {
+      facebook: 'https://www.facebook.com/',
+      twitter: 'https://x.com/',
+      linkedin: 'https://www.linkedin.com/feed/',
+      instagram: 'https://www.instagram.com/',
+    },
+  },
+  {
+    id: 36,
+    name: 'Sadik',
+    title: 'Hafiz Mentor',
+    image: secundaria2,
+    socialLinks: {
+      facebook: 'https://www.facebook.com/',
+      twitter: 'https://x.com/',
+      linkedin: 'https://www.linkedin.com/feed/',
+      instagram: 'https://www.instagram.com/',
+    },
+  },
+  {
+    id: 37,
+    name: 'Sadik',
+    title: 'Hafiz Mentor',
+    image: secundaria3,
+    socialLinks: {
+      facebook: 'https://www.facebook.com/',
+      twitter: 'https://x.com/',
+      linkedin: 'https://www.linkedin.com/feed/',
+      instagram: 'https://www.instagram.com/',
+    },
+  },
+  {
+    id: 38,
+    name: 'Sadik',
+    title: 'Hafiz Mentor',
+    image: secundaria4,
     socialLinks: {
       facebook: 'https://www.facebook.com/',
       twitter: 'https://x.com/',

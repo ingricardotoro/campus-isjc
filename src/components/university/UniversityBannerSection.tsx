@@ -1,8 +1,8 @@
 'use client'
 import React from 'react';
-import bannerImgOne from '../../../public/assets/images/banner/banner-2/pasillos.jpg'
-import bannerImgTwo from '../../../public/assets/images/banner/banner-2/kinder.jpg'
-import bannerImgThree from '../../../public/assets/images/banner/banner-2/instalaciones.jpg'
+import bannerImgOne from '../../../public/assets/images/banner/banner-2/sanjosedelcarmen4_lite.png'
+import bannerImgTwo from '../../../public/assets/images/banner/banner-2/sanjosedelcarmen3_lite.jpg'
+import bannerImgThree from '../../../public/assets/images/banner/banner-2/sanjosedelcarmen2_lite.png'
 import bannerImgFour from '../../../public/assets/images/banner/banner-2/sanjosedelcarmen11_lite.png'
 
 //swiper

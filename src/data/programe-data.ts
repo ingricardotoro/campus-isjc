@@ -26,7 +26,7 @@ import aiTextShape from '../../public/assets/images/course/ai.webp';
 //kindergraten image
 import homeProgram1 from "../../public/assets/images/program/home-program-kinder-1.webp";
 import homeProgram2 from "../../public/assets/images/program/home-program-kinder-2.webp";
-import homeProgram3 from "../../public/assets/images/program/home-program-kinder-3.webp";
+import homeProgram3 from "../../public/assets/images/program/kinder4.jpg";
 import programShape from "../../public/assets/images/shape/course-shape.webp";
 
 
@@ -108,6 +108,17 @@ export const programData: ProgramDataType[] = [
         id: 7,
         image: homeProgram1,
         shapeImage: programShape,
+        BgClass: "info-bg",
+        title: "Nursery",
+        hoursTime: 2,
+        age: "3-4 Años",
+        duration: "5 Dias",
+        description: "Desarrollar habilidades cognitivas a través de juegos educativos y actividades prácticas.",
+    },
+    {
+        id: 8,
+        image: homeProgram2,
+        shapeImage: programShape,
         BgClass: "theme-bg",
         title: "Pre - Kínder",
         hoursTime: 35,
@@ -116,8 +127,8 @@ export const programData: ProgramDataType[] = [
         description: "Desarrollar habilidades sociales a través de sesiones grupales interactivas.",
     },
     {
-        id: 8,
-        image: homeProgram2,
+        id: 9,
+        image: homeProgram3,
         shapeImage: programShape,
         BgClass: "warning-bg",
         title: "Kínder",
@@ -126,17 +137,7 @@ export const programData: ProgramDataType[] = [
         duration: "5 Dias",
         description: "Desarrollar el desarrollo motris de los niños mediante actividades dinámicas.",
     },
-    {
-        id: 9,
-        image: homeProgram3,
-        shapeImage: programShape,
-        BgClass: "info-bg",
-        title: "Artes y Deportes",
-        hoursTime: 2,
-        age: "5-6 Años",
-        duration: "1-2 Dia",
-        description: "Desarrollar el talento en Artes y Deportes en nuestro Polideportivo",
-    },
+    
     {
         id: 10,
         image: homeProgram1,

@@ -1,7 +1,7 @@
 import instructorsData from '@/data/instructor-data';
 import React from 'react';
 import testimonialShape from '../../../public/assets/images/testimonial/testimonial-shape-bg.webp';
-import Link from 'next/link';
+//import Link from 'next/link';
 import Image from 'next/image';
 
 const SpecialClassesHighSchool = () => {
@@ -22,12 +22,12 @@ const SpecialClassesHighSchool = () => {
                     </div>
                     <div className="row gy-30">
                         {
-                            instructorsData.slice(26, 30).map((item, index) => {
+                            instructorsData.slice(34, 38).map((item, index) => {
                                 // Adaptar nombres y títulos para high school
                                 const highSchoolPrograms = [
-                                    { name: "Programa de Liderazgo", title: "Desarrollo de habilidades directivas" },
-                                    { name: "Bachillerato Científico", title: "Preparación para carreras STEM" },
-                                    { name: "Programa de Voluntariado", title: "Servicio social y comunitario" },
+                                    { name: "Retiros Espirituales", title: "Desarrollo de habilidades espirituales" },
+                                    { name: "Viajes Académicos", title: "Museos y excursiones educativas" },
+                                    { name: "Programa Desarrollo Social", title: "Trabajo Educativo Social" },
                                     { name: "Orientación Universitaria", title: "Preparación para admisiones" }
                                 ];
 
@@ -37,16 +37,16 @@ const SpecialClassesHighSchool = () => {
                                             <div className="bd-instructor-item">
                                                 <div className="bd-instructor-thumb-wrap">
                                                     <div className="bd-instructor-thumb">
-                                                        <Link href={`/instructor/instructor-details/${item.id}`}>
+                                                      
                                                             <Image style={{width:"100%", height:"auto"}} src={item.image} alt="image" priority/>
-                                                        </Link>
+                                                       
                                                     </div>
                                                 </div>
                                                 <div className="bd-instructor-info">
                                                     <h6 className="name underline-two">
-                                                        <Link href={`/instructor/instructor-details/${item.id}`}>
+                                                        
                                                             {highSchoolPrograms[index].name}
-                                                        </Link>
+                                                       
                                                     </h6>
                                                     <span>{highSchoolPrograms[index].title}</span>
                                                 </div>

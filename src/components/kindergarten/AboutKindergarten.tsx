@@ -18,7 +18,7 @@ const AboutKindergarten = () => {
   const promotionData = [
     { number: '60+', text: ['Años de', 'experiencia'] },
     { number: '1K+', text: ['Estudiantes', 'Cada año'] },
-    { number: '15+', text: ['Premios', 'Ganados'] },
+    { number: '50+', text: ['Promociones', 'Graduadas'] },
   ];
 
   const features = [

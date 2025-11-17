@@ -3,14 +3,20 @@ import Image from 'next/image';
 import React from 'react';
 import campusGalleryOne from "../../../public/assets/images/gallery/elementary/elementary1.jpg";
 import campusGalleryTwo from "../../../public/assets/images/gallery/elementary/elementary21.jpg";
-import campusGalleryThree from "../../../public/assets/images/gallery/elementary/elementary27.jpg";
+import campusGalleryThree from "../../../public/assets/images/gallery/elementary/spelling.jpg";
 import campusGalleryFour from "../../../public/assets/images/gallery/elementary/elementary29.jpg";
 import campusGalleryFive from "../../../public/assets/images/gallery/elementary/elementary24.jpg";
 import campusGallerySix from "../../../public/assets/images/gallery/elementary/elementary18.jpg";
 import campusGallerySeven from "../../../public/assets/images/gallery/elementary/elementary19.jpg";
 import campusGalleryEight from "../../../public/assets/images/gallery/elementary/elementary20.jpg";
+
+import campusGalleryNine from "../../../public/assets/images/gallery/elementary/canto.jpg";
+import campusGalleryTen from "../../../public/assets/images/gallery/elementary/polideportivo.jpg";
+import campusGalleryEleven from "../../../public/assets/images/gallery/elementary/clarita.jpg";
+import campusGalleryTwelve from "../../../public/assets/images/gallery/elementary/comunion.jpg";
+
 import { PhotoProvider, PhotoView } from 'react-photo-view';
-import Link from 'next/link';
+//import Link from 'next/link';
 
 const ElementaryGallery = () => {
     // Image data array
@@ -23,6 +29,11 @@ const ElementaryGallery = () => {
         { img: campusGallerySix, text:"Bautismo y primera comunión" },
         { img: campusGallerySeven, text:"Celebración Carmelitana" },
         { img: campusGalleryEight, text:"Olimpiadas Matemáticas" },
+
+        { img: campusGalleryNine, text:"Día del árbol" },
+        { img: campusGalleryTen, text:"Bautismo y primera comunión" },
+        { img: campusGalleryEleven, text:"Celebración Carmelitana" },
+        { img: campusGalleryTwelve, text:"Olimpiadas Matemáticas" },
     ];
     return (
         
@@ -58,10 +69,10 @@ const ElementaryGallery = () => {
                         ))}
                     </div>
                     {/* <!-- gallery-more style --> */}
-                    <div className="bd-gallery-more-btn d-flex justify-content-center mt-50">
+                  {/*   <div className="bd-gallery-more-btn d-flex justify-content-center mt-50">
                         <Link className="bd-btn btn-outline-border-primary" href="#">Ver Mas <span className="right-icon"><i
                             className="fa-duotone fa-spinner"></i></span></Link>
-                    </div>
+                    </div> */}
                     {/* <!-- gallery-more style end --> */}
                 </div>
             </section>

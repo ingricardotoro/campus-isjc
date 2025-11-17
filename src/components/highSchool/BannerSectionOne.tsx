@@ -7,11 +7,11 @@ import shape2 from '../../../public/assets/images/banner/banner-1/shape-2.webp';
 import shape3 from '../../../public/assets/images/banner/banner-1/shape-3.webp';
 import shape4 from '../../../public/assets/images/banner/banner-1/shape-4.webp';
 import shape5 from '../../../public/assets/images/banner/banner-1/shape-5.webp';
-import bannerImg from '../../../public/assets/images/banner/banner-1/elementary_child.png'; // Usando la misma imagen por ahora
+import bannerImg from '../../../public/assets/images/banner/banner-1/1001132720.png'; // Usando la misma imagen por ahora
 import dotShape from '../../../public/assets/images/shape/dot-shape.webp';
 import badgeImg from '../../../public/assets/images/shape/badge.webp';
-import badgeImgTwo from '../../../public/assets/images/shape/badge-img.webp';
-import StarGroupImg from '../../../public/assets/images/shape/star-group.webp';
+//import badgeImgTwo from '../../../public/assets/images/shape/badge-img.webp';
+//import StarGroupImg from '../../../public/assets/images/shape/star-group.webp';
 import Image from 'next/image';
 import { useVideoModal } from '@/contextApi/VideoProvider';
 
@@ -90,14 +90,14 @@ const BannerSectionOne = () => {
                                         </div>
                                         <div className="bd-banner-tag-two">
                                             <div className="inner">
-                                                <div className="icon">
-                                                    <Image src={badgeImgTwo} style={{ width: "100%", height: "auto" }} priority alt="shape" />
-                                                    <Image src={StarGroupImg} style={{ width: "100%", height: "auto" }} priority alt="shape" />
-                                                </div>
+                                                 <div className="icon">
+                                                   {/* <Image src={badgeImgTwo} style={{ width: "100%", height: "auto" }} priority alt="shape" />
+                                                    <Image src={StarGroupImg} style={{ width: "100%", height: "auto" }} priority alt="shape" />*/}
+                                                </div> 
                                                 <div className="content">
-                                                    <div className="title">25+</div>
+                                                    <div className="title">6K+</div>
                                                     <div className="subtitle">
-                                                        Años de <br /> Experiencia
+                                                        Estidiantes Graduados
                                                     </div>
                                                 </div>
                                             </div>

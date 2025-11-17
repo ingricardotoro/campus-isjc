@@ -4,8 +4,8 @@ import circleImg from "../../../public/assets/images/shape/about-solid-circle.we
 import bookShapeImg from "../../../public/assets/images/shape/about-book-shape.webp";
 import aboutWaveShape from "../../../public/assets/images/shape/about-wave-shape.webp";
 import aboutCircle from "../../../public/assets/images/shape/about-circle.webp";
-import aboutThumb1 from "../../../public/assets/images/about/valores.jpg"; // Usando la misma imagen por ahora
-import aboutThumbSmall from "../../../public/assets/images/about/elecciones2_2.jpg"; // Usando la misma imagen por ahora
+import aboutThumb1 from "../../../public/assets/images/about/valores2.jpg"; // Usando la misma imagen por ahora
+import aboutThumbSmall from "../../../public/assets/images/about/elecciones3.jpg"; // Usando la misma imagen por ahora
 import dotShape from "../../../public/assets/images/shape/dot-shape-01.webp";
 
 interface AboutFeatureProps {

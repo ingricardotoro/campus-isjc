@@ -1,18 +1,30 @@
 'use client'
 import Image from 'next/image';
 import React from 'react';
-import campusGalleryOne from "../../../public/assets/images/gallery/elementary/elementary1.jpg"; // Usando las mismas imágenes por ahora
-import campusGalleryTwo from "../../../public/assets/images/gallery/elementary/elementary21.jpg";
-import campusGalleryThree from "../../../public/assets/images/gallery/elementary/elementary27.jpg";
-import campusGalleryFour from "../../../public/assets/images/gallery/elementary/elementary29.jpg";
-import campusGalleryFive from "../../../public/assets/images/gallery/elementary/elementary24.jpg";
-import campusGallerySix from "../../../public/assets/images/gallery/elementary/elementary18.jpg";
-import campusGallerySeven from "../../../public/assets/images/gallery/elementary/elementary19.jpg";
-import campusGalleryEight from "../../../public/assets/images/gallery/elementary/elementary20.jpg";
+import campusGalleryOne from "../../../public/assets/images/gallery/highschool/cancha.jpg"; // Usando las mismas imágenes por ahora
+import campusGalleryTwo from "../../../public/assets/images/gallery/highschool/desfile.jpg";
+import campusGalleryThree from "../../../public/assets/images/gallery/highschool/desfile2.jpg";
+import campusGalleryFour from "../../../public/assets/images/gallery/highschool/reunion.jpg";
+import campusGalleryFive from "../../../public/assets/images/gallery/highschool/gimnasiada2.jpg";
+import campusGallerySix from "../../../public/assets/images/gallery/highschool/gimnasiada3.jpg";
+import campusGallerySeven from "../../../public/assets/images/gallery/highschool/secundaria6.jpg";
+import campusGalleryEight from "../../../public/assets/images/gallery/highschool/musica1.jpg";
+
+import campusGalleryNine from "../../../public/assets/images/gallery/highschool/musica2.jpg";
+import campusGalleryTen from "../../../public/assets/images/gallery/highschool/pentecostes2.jpg";
+import campusGalleryEleven from "../../../public/assets/images/gallery/highschool/secundaria7.jpg";
+import campusGalleryTwelve from "../../../public/assets/images/gallery/highschool/premiacion.jpg";
+
+import campusGalleryThirteen from "../../../public/assets/images/gallery/highschool/vestido.jpg";
+import campusGalleryFourteen from "../../../public/assets/images/gallery/highschool/graduacion2.jpg";
+import campusGalleryFifteen from "../../../public/assets/images/gallery/highschool/spelling3.jpg";
+import campusGallerySixteen from "../../../public/assets/images/gallery/highschool/viacrucis4.jpg";
+
 import { PhotoProvider, PhotoView } from 'react-photo-view';
-import Link from 'next/link';
+//import Link from 'next/link';
 
 const HighSchoolGallery = () => {
+
     // Image data array
     const galleryData = [
         { img: campusGalleryOne, text:"Graduación" },
@@ -23,6 +35,16 @@ const HighSchoolGallery = () => {
         { img: campusGallerySix, text:"Retiros Espirituales" },
         { img: campusGallerySeven, text:"Modelo de Naciones Unidas" },
         { img: campusGalleryEight, text:"Olimpiadas Científicas" },
+
+        { img: campusGalleryNine, text:"Feria Universitaria" },
+        { img: campusGalleryTen, text:"Retiros Espirituales" },
+        { img: campusGalleryEleven, text:"Modelo de Naciones Unidas" },
+        { img: campusGalleryTwelve, text:"Olimpiadas Científicas" },
+
+        { img: campusGalleryThirteen, text:"Feria Universitaria" },
+        { img: campusGalleryFourteen, text:"Retiros Espirituales" },
+        { img: campusGalleryFifteen, text:"Modelo de Naciones Unidas" },
+        { img: campusGallerySixteen, text:"Olimpiadas Científicas" },
     ];
     return (
         
@@ -58,10 +80,10 @@ const HighSchoolGallery = () => {
                         ))}
                     </div>
                     {/* <!-- gallery-more style --> */}
-                    <div className="bd-gallery-more-btn d-flex justify-content-center mt-50">
+                   {/*  <div className="bd-gallery-more-btn d-flex justify-content-center mt-50">
                         <Link className="bd-btn btn-outline-border-primary" href="#">Ver Más <span className="right-icon"><i
                             className="fa-duotone fa-spinner"></i></span></Link>
-                    </div>
+                    </div> */}
                     {/* <!-- gallery-more style end --> */}
                 </div>
             </section>

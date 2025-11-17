@@ -108,9 +108,9 @@ const UniversityTestimonialArea = () => {
                                                                 <p className="description">“{item.content}”</p>
                                                                 <div className="bd-testimonial-meta">
                                                                     <div className="author">
-                                                                        <div className="thumb">
+                                                                       {/*  <div className="thumb">
                                                                             <Image src={item.avatar} style={{width:"100%", height:"auto"}} alt="student" priority />
-                                                                        </div>
+                                                                        </div> */}
                                                                         <div className="details">
                                                                             <h6 className="name">{item.name}</h6>
                                                                             <p className="designation">{item.designation}</p>

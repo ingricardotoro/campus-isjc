@@ -110,13 +110,13 @@ const counterData: ICounter[] = [
     //university page counter section data start
     {
         id: 21,
-        counterNum: 3800,
+        counterNum: 5000,
         counterText: "Profesionales Egresados"
     },
     {
         id: 22,
-        counterNum: 600,
-        counterText: "Estudiantes Excelencia Académica"
+        counterNum: 50,
+        counterText: "Promociones Graduadas"
     },
     {
         id: 23,

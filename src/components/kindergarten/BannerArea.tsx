@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React from 'react';
 import bannerBg from "../../../public/assets/images/banner/banner-4/kindergarten-banner-bg.webp";
-import bannerThumb from "../../../public/assets/images/banner/banner-4/kinder4 - copia.png";
+import bannerThumb from "../../../public/assets/images/banner/banner-1/kinder.png";
 import bannerShape1 from "../../../public/assets/images/shape/kg-banner-shpape-1.webp";
 import bannerShap2 from "../../../public/assets/images/shape/kg-banner-shpape-2.webp";
 import bannerShap3 from "../../../public/assets/images/shape/kg-banner-shpape-3.webp";
@@ -21,7 +21,7 @@ const BannerArea = () => {
                         <div className="col-xxl-5 col-xl-6 col-lg-6 col-md-12">
                             <div className="bd-banner-section-wrapper p-relative">
                                 <span className="bd-banner-subtitle text-primary uppercase mb-10 d-block fw-5">Totalmente Bilingüe</span>
-                                <h1 className="bd-banner-title medium mb-20">Welcome to Kindergarten</h1>
+                                <h1 className="bd-banner-title medium mb-20">Bienvenido al área de Pre-Básica</h1>
                                 <p className="bd-banner-description">Brindamos un ambiente seguro y estimulante donde los niños exploran, aprenden y desarrollan sus habilidades a través del juego, la creatividad y el acompañamiento de docentes dedicados.</p>
                                 <div className="bd-banner-btn d-flex-items flex-wrap gap-30">
                                     <Link className="bd-btn btn-outline-border-primary" href="/contactanos">Contáctanos</Link>
