@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -34,6 +32,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Inicializar Resend dentro de la función
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@sanjosedelcarmen.edu.hn';
 
     // Preparar el email HTML

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -50,6 +48,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Configuración de email incompleta. Por favor, contacte al administrador.' },
         { status: 500 }
+      );
+    }
+
+    // Inicializar Resend dentro de la función
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    // Verificar que se haya adjuntado el CV
+    if (!curriculumFileName || !curriculumFileContent) {
+      return NextResponse.json(
+        { error: 'Por favor adjunta tu Curriculum Vitae' },
+        { status: 400 }
       );
     }
 
