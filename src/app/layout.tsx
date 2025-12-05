@@ -1,4 +1,4 @@
-import { Roboto, Big_Shoulders_Display } from "next/font/google";
+import { Roboto, Montserrat } from "next/font/google";
 import "./globals.scss";
 import "swiper/css/bundle";
 import "react-photo-view/dist/react-photo-view.css";
@@ -18,9 +18,9 @@ const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
 });
 
-// Load Big Shoulders Display font
-const bigShoulders = Big_Shoulders_Display({
-  variable: "--font-big-shoulders",
+// Load Montserrat font (alternative to Big Shoulders Display)
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
@@ -37,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning className={`body-bg ${roboto.variable} ${bigShoulders.variable}`}>
+      <body suppressHydrationWarning className={`body-bg ${roboto.variable} ${montserrat.variable}`}>
         <VideoProvider>
           <ReduxProvider>
             <AppProvider>

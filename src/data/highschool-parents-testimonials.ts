@@ -18,7 +18,7 @@ const highSchoolParentsTestimonials: HighSchoolParentsTestimonial[] = [
     {
         name: "Roberto Castillo Flores",
         avatar: parentsThumb2,
-        review: "Elegimos este colegio para nuestros hijos por su excelente balance entre formación académica rigurosa y desarrollo humano integral. El programa de secundaria prepara a los estudiantes no solo para obtener buenas calificaciones, sino para enfrentar los desafíos de la vida con valores sólidos y pensamiento crítico. La educación bilingüe es excepcional.",
+        review: "Elegimos este colegio para nuestros hijos por su formación en valores morales y espirituales. El programa de secundaria prepara a los estudiantes no solo para obtener buenas calificaciones, sino para enfrentar los desafíos de la vida con valores sólidos y pensamiento crítico. La educación bilingüe es excepcional.",
         bgClass: "bg-2"
     },
     {

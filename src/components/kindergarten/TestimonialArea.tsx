@@ -36,13 +36,13 @@ const TestimonialArea = () => {
                         <div className="col-xl-6 col-lg-6">
                             <div className="bd-testimonial-box">
                                 {[{
-                                    name: "Emma L. Smith",
+                                    name: "Pablo Fernández",
                                     avatar: parentsThumb,
-                                    review: "Los maestros del áres de Pre-Básica son muy atentos y cariñosos. Mi hijo ha florecido mucho desde que ingresó, ¡y cada día está lleno de actividades divertidas de aprendizaje!"
+                                    review: "La Institución no se limita a impartir conocimientos; es una misión que busca formar corazones, fortalecer valores y sembrar fe."
                                 }, {
-                                    name: "James T. Walker",
+                                    name: "Liliam Amador",
                                     avatar: parentsThumb2,
-                                    review: "¡A nuestro hijo le encanta su tiempo en el Kinder del San José del Carmen, el personal es muy cálido y amable, y hacen que el aprendizaje sea una aventura divertida para todos los niños."
+                                    review: "¡A nuestro hijo le encanta su tiempo en el Kinder del San José del Carmen, el personal es muy cálido y amable, y hacen que el aprendizaje sea muy divertido y ameno para todos los niños."
                                 }].map((testimonial, index) => (
                                     <div key={index} className={`bd-testimonial-wrapper style-ten  mb-25`}>
                                         <div className={`bd-testimonial-item  ${index === 1 ? 'bg-2' : ''}`}>

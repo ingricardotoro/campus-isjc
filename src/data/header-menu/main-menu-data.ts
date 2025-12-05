@@ -42,11 +42,11 @@ const main_menu_data: MenuItem[] = [
     pluseIncon: true,
     link: "#",
     submenus: [
-      {
+     /*  {
         title: "Historia",
         link: "/historia",
         pluseIncon: false,
-      },
+      }, */
 
       {
         title: "Misión y Visión",
@@ -70,11 +70,11 @@ const main_menu_data: MenuItem[] = [
         pluseIncon: false,
       }, */
       
-      {
+      /* {
         title: "Proyecto Carmelitano",
         link: "#",
         pluseIncon: false,
-      },
+      }, */
 
       
      /*  {

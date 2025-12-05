@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import NiceSelect from '@/components/elements/nice-select/NiceSelect';
+import { toast } from 'sonner';
 
 // Definir la interfaz Option para cumplir con el requisito de NiceSelect
 interface Option {
@@ -10,11 +11,128 @@ interface Option {
 }
 
 const JobApplicationForm = () => {
-    // Estado para manejar la selección del área laboral
+    // Estados para manejar la selección y el envío
     const [selectedArea, setSelectedArea] = useState('');
+    const [selectedEnglish, setSelectedEnglish] = useState('');
+    const [selectedSpecialization, setSelectedSpecialization] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
     const selectHandler = (item: Option, name: string) => {
         if (name === 'areaLaboral') {
             setSelectedArea(item.value || '');
+        } else if (name === 'nivelIngles') {
+            setSelectedEnglish(item.value || '');
+        } else if (name === 'especializacion') {
+            setSelectedSpecialization(item.value || '');
+        }
+    };
+
+    // Manejar el envío del formulario
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const fileInput = formData.get('curriculum') as File;
+
+        // Validar que se haya seleccionado un área laboral
+        if (!selectedArea) {
+            toast.error('Por favor selecciona un área laboral');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Validar que se haya seleccionado nivel de inglés
+        if (!selectedEnglish) {
+            toast.error('Por favor selecciona tu nivel de inglés');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Validar que se haya adjuntado un CV
+        if (!fileInput || fileInput.size === 0) {
+            toast.error('Por favor adjunta tu Curriculum Vitae en formato PDF');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Validar que sea un archivo PDF
+        if (fileInput.type !== 'application/pdf') {
+            toast.error('El CV debe estar en formato PDF');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Validar tamaño del archivo (máximo 5MB)
+        if (fileInput.size > 5 * 1024 * 1024) {
+            toast.error('El CV no debe superar los 5MB');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Convertir el archivo a base64
+        let fileBase64 = '';
+        try {
+            const fileBuffer = await fileInput.arrayBuffer();
+            const base64 = Buffer.from(fileBuffer).toString('base64');
+            fileBase64 = base64;
+        } catch (error) {
+            console.error('Error al procesar el archivo:', error);
+            toast.error('Error al procesar el archivo CV');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Preparar datos para enviar
+        const applicationData = {
+            nombreCompleto: formData.get('nombreCompleto'),
+            telefono: formData.get('telefono'),
+            correo: formData.get('correo'),
+            direccion: formData.get('direccion'),
+            nivelIngles: selectedEnglish,
+            areaLaboral: selectedArea,
+            especializacion: selectedSpecialization || undefined,
+            experiencia: formData.get('experiencia'),
+            curriculumFileName: fileInput.name,
+            curriculumFileContent: fileBase64,
+        };
+
+        try {
+            const response = await fetch('/api/job-application', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(applicationData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                toast.success('¡Aplicación enviada exitosamente!', {
+                    description: 'Revisaremos tu aplicación y nos pondremos en contacto pronto.',
+                    duration: 5000,
+                });
+                // Limpiar el formulario
+                form.reset();
+                setSelectedArea('');
+                setSelectedEnglish('');
+                setSelectedSpecialization('');
+            } else {
+                toast.error('Error al enviar la aplicación', {
+                    description: result.error || 'Por favor, intenta nuevamente.',
+                    duration: 5000,
+                });
+            }
+        } catch (error) {
+            console.error('Error al enviar el formulario:', error);
+            toast.error('Error de conexión', {
+                description: 'No se pudo enviar la aplicación. Por favor, verifica tu conexión a internet.',
+                duration: 5000,
+            });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -32,18 +150,18 @@ const JobApplicationForm = () => {
     const teachingSpecializations: Option[] = [
         { id: 1, option: 'Seleccione una especialización', value: '' },
         { id: 2, option: 'Prebásica', value: 'Docente de Prebásica' },
-        { id: 2, option: 'Primaria', value: 'Docente de Primaria' },
-        { id: 2, option: 'Matemáticas', value: 'Matemáticas' },
-        { id: 3, option: 'Ciencias', value: 'Ciencias Naturales / Biología / Química' },
-        { id: 4, option: 'Español', value: 'Español / Literatura' },
-        { id: 5, option: 'Inglés', value: 'Inglés' },
-        { id: 6, option: 'Estudios Sociales', value: 'Ciencias Sociales' },
-        { id: 7, option: 'Artes', value: 'Artes / Música' },
-        { id: 8, option: 'Educación Física', value: 'Educación Física' },
-        { id: 9, option: 'Tecnología', value: 'Tecnología' },
-        { id: 10, option: 'Religión', value: 'Religión' },
-        { id: 11, option: 'Orientación', value: 'Orientación / Psicología' },
-        { id: 11, option: 'Otro', value: 'Otro' },
+        { id: 3, option: 'Primaria', value: 'Docente de Primaria' },
+        { id: 4, option: 'Matemáticas', value: 'Matemáticas' },
+        { id: 5, option: 'Ciencias', value: 'Ciencias Naturales / Biología / Química' },
+        { id: 6, option: 'Español', value: 'Español / Literatura' },
+        { id: 7, option: 'Inglés', value: 'Inglés' },
+        { id: 8, option: 'Estudios Sociales', value: 'Ciencias Sociales' },
+        { id: 9, option: 'Artes', value: 'Artes / Música' },
+        { id: 10, option: 'Educación Física', value: 'Educación Física' },
+        { id: 11, option: 'Tecnología', value: 'Tecnología' },
+        { id: 12, option: 'Religión', value: 'Religión' },
+        { id: 13, option: 'Orientación', value: 'Orientación / Psicología' },
+        { id: 14, option: 'Otro', value: 'Otro' },
     ];
 
     // Opciones para nivel de inglés
@@ -57,7 +175,7 @@ const JobApplicationForm = () => {
     ];
 
     return (
-        <form action="#" encType="multipart/form-data">
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="row gy-30">
                 <div className="col-12">
                     <h4 className="form-section-title mb-4">1. Información Personal</h4>
@@ -263,7 +381,21 @@ const JobApplicationForm = () => {
                     <div className="row justify-content-center">
                         <div className="col-xl-5">
                             <div className="bd-apply-submit-btn mt-50">
-                                <button className="bd-btn btn-outline-primary w-100" type="submit">Enviar Aplicación</button>
+                                <button 
+                                    className="bd-btn btn-outline-primary w-100" 
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                                            {' '}
+                                            Enviando...
+                                        </>
+                                    ) : (
+                                        'Enviar Aplicación'
+                                    )}
+                                </button>
                             </div>
                         </div>
                     </div>

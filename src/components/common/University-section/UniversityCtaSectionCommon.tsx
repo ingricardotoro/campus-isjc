@@ -43,8 +43,8 @@ const UniversityCtaSectionCommon = () => {
                                         </div>
                                     </div>
                                     <div className="bd-cta-btn d-flex flex-wrap gap-30 align-items-center">
-                                        <Link className="bd-btn btn-outline-border-white" href="/apply-online">
-                                            Conoce nuestas academias</Link>
+                                        <Link className="bd-btn btn-outline-border-white" href="https://www.facebook.com/polideportivoSJ" target="_blank" rel="noopener noreferrer">
+                                            Conoce nuestras academias</Link>
                                         {/* <Link className="bd-btn btn-outline-border-white" href="/contact-us">Contact Us</Link> */}
                                     </div>
                                 </div>

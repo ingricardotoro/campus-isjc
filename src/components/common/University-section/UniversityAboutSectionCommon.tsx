@@ -81,7 +81,7 @@ const UniversityAboutSectionCommon = () => {
                                     {
                                         pathName == "/university" ? 
                                         <Link className="bd-btn btn-primary" href="/polideportivo">Mas Detalles</Link>
-                                        : <Link className="bd-btn btn-outline-primary" href="/about-university">Academia Arte y Deporte</Link>
+                                        : <Link className="bd-btn btn-outline-primary" href="https://www.facebook.com/polideportivoSJ" target="_blank" rel="noopener noreferrer">Academia Arte y Deporte</Link>
                                     }
                                     
                                 </div>

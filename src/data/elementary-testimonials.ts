@@ -8,7 +8,7 @@ const elementaryTestimonials: ITestimonial[] = [
     {
         id: 1,
         rating: 5,
-        content: "Lo que más me gusta de mi escuela son las canchas de fútbol donde jugamos durante la clase de educación física. Nuestro profesor nos enseña diferentes deportes y siempre nos anima a mantenernos activos. ¡Es mi clase favorita porque puedo correr, jugar con mis amigos y aprender nuevas habilidades!",
+        content: "Lo que más me gusta de mi escuela son las canchas de fútbol donde jugamos durante la clase de educación física. Nuestra maestra nos enseña diferentes deportes y siempre nos anima a mantenernos activos. Es mi clase favorita porque puedo correr, jugar con mis amigos.",
         name: "Sofía Martínez",
         avatar: avatar1,
         designation: "Estudiante de Primaria"
@@ -16,7 +16,7 @@ const elementaryTestimonials: ITestimonial[] = [
     {
         id: 2,
         rating: 5,
-        content: "En mi escuela aprendemos muchas cosas interesantes. Me gusta mucho la clase de computación donde hacemos proyectos divertidos. También disfruto las clases de valores porque aprendemos a ser buenas personas y a ayudar a los demás.",
+        content: "En mi escuela aprendemos muchas cosas interesantes. Me gusta mucho la clase de computación donde hacemos proyectos divertidos. También disfruto las clases de religión porque aprendemos a ser buenas personas y a ayudar a los demás.",
         name: "Carlos Rodríguez",
         avatar: avatar2,
         designation: "Estudiante de Primaria"
@@ -32,7 +32,7 @@ const elementaryTestimonials: ITestimonial[] = [
     {
         id: 4,
         rating: 5,
-        content: "Lo que más me gusta de mi escuela es que tenemos una biblioteca con muchos libros interesantes y un laboratorio de ciencias donde hacemos experimentos. Los maestros nos enseñan con mucha paciencia y me ayudan a mejorar cada día.",
+        content: "Me encanta mi escuela porque tenemos muchas excursiones educativas. El año pasado fuimos a un museo y aprendimos sobre historia. También me gusta que en mi escuela todos somos amigos y nos ayudamos mutuamente. ¡Es un lugar donde me siento seguro y feliz!",
         name: "Diego Hernández",
         avatar: avatar4,
         designation: "Estudiante de Primaria"

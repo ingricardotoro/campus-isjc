@@ -94,7 +94,7 @@ const AboutKindergarten = () => {
 
                 {/* Buttons */}
                 <div className="bd-about-btn d-flex-items gap-30">
-                  <Link className="bd-btn btn-primary" href="/about-kindergarten">Agenda una Cita</Link>
+                   <Link className="bd-btn btn-primary" href="/contactanos">Contáctanos</Link>
                   <button type='button' onClick={() => playVideo("2XsdnFbcZpU", "youtube")} className="bd-video-btn popup-video">
                     <span className="icon text-xxs-none"><i className="fa-solid fa-play"></i></span>
                     Conoce nuestras áreas

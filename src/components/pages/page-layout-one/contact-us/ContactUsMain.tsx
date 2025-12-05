@@ -1,14 +1,14 @@
 import React from 'react';
-import Breadcrumbs from '../../../common/Breadcrumb/Breadcrumbs';
+import BreadcrumbsContact from '../../../common/Breadcrumb/BreadcrumbContact';
 import ContactFormArea from './ContactFormArea';
 import ContactAddressArea from './ContactAddressArea';
 
 const ContactUsMain = () => {
     return (
         <>
-            <Breadcrumbs breadcrumbTitle='Contact Us' />
-            <ContactFormArea />
+            <BreadcrumbsContact breadcrumbTitle='Área de Contacto' />
             <ContactAddressArea />
+            <ContactFormArea />
         </>
     );
 };
