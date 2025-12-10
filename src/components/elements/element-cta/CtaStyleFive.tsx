@@ -1,5 +1,5 @@
 import React from 'react';
-import favIcon from '../../../../public/assets/images/logo/favicon.svg';
+import favIcon from '../../../../public/assets/images/logo/logo_isjc.png';
 import Image from 'next/image';
 import Link from 'next/link';
 
