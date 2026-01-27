@@ -11,7 +11,7 @@ import useGlobalContext from '@/hooks/useContexts';
 // import useCart from '@/hooks/useCart';
 
 const KindergartenHeader = () => {
-    const { scrollDirection } = useGlobalContext();
+    const { scrollDirection, toggleSidebarMenu } = useGlobalContext();
     const [openCart, setOpenCart] = useState(false)
     //cart quantity
     // const { getCartProductQuantity } = useCart();
@@ -38,17 +38,8 @@ const KindergartenHeader = () => {
                                 </nav>
                             </div>
                         </div>
-                        {/* <div className="bd-header-right justify-content-end">
-                            <div className="bd-header-meta has-white">
-                                <button className="bd-search-open-btn meta-icon" type="button"><i
-                                    className="fa-regular fa-magnifying-glass"></i></button>
-                                <button onClick={() => setOpenCart(true)} className="cartmini-open-btn meta-icon" type="button"><i
-                                    className="fa-regular fa-cart-shopping"></i></button>
-                            </div>
-                            <div className="bd-header-sign-btn">
-                                <Link className="bd-btn btn-outline-border-secondary h-40px" href="#">Find Courses</Link>
-                            </div>
-                            <div className="bd-header-hamburger">
+                        <div className="bd-header-right justify-content-end">
+                            <div className="bd-header-hamburger d-block d-xl-none">
                                 <div className="sidebar-toggle">
                                     <Link onClick={toggleSidebarMenu} className="bar-icon" href="#">
                                         <span></span>
@@ -57,7 +48,7 @@ const KindergartenHeader = () => {
                                     </Link>
                                 </div>
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
             </header>

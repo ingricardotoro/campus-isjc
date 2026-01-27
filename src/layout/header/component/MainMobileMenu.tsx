@@ -42,6 +42,9 @@ const MobileMenu = () => {
                                 if (item?.hasDropdown === true) {
                                     e.preventDefault();
                                     handleActiveSubMenu(item.id);
+                                } else {
+                                    // Si no tiene dropdown, cerrar el menú al hacer clic
+                                    toggleSidebarMenu();
                                 }
                             }}
                             href={item.link}
@@ -95,6 +98,9 @@ const MobileMenu = () => {
                                                         if (dropdownItem?.megaMenu?.length) {
                                                             e.preventDefault();
                                                             handleActiveMegaMenu(megaMenuKey);
+                                                        } else {
+                                                            // Si no tiene megaMenu, cerrar el menú al hacer clic
+                                                            toggleSidebarMenu();
                                                         }
                                                     }}
                                                     className={activeMegaMenu === megaMenuKey ? "active" : ""}

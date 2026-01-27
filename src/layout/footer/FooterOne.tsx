@@ -25,7 +25,7 @@ const FooterOne = () => {
                                     className="theme-text"></span></h2>
                                 {/* <span className="d-block white-text mb-35">+60 años formando profesionales con principios y valores.</span> */}
                                 <div className="demo-banner-btn">
-                                    <Link className="bd-btn btn-primary btn-extra-large" href="https://themeforest.net/user/topylo">
+                                    <Link className="bd-btn btn-primary btn-extra-large" href="/contactanos">
                                         Contáctanos
                                     </Link>
                                 </div>

@@ -55,7 +55,7 @@ const ContactInfo = () => (
             <div className="bd-footer-social">
                 <div className='theme-social secondary'>
                     <ul className="social-icon-list">
-                        <li><Link className="facebook" href="https://www.facebook.com/" target="_blank"><i className="fa-brands fa-facebook-f"></i></Link> </li>
+                        <li><Link className="facebook" href="https://www.facebook.com/p/Instituto-San-Jos%C3%A9-Del-Carmen-100063924015070/?locale=es_LA" target="_blank"><i className="fa-brands fa-facebook-f"></i></Link> </li>
                        {/*  <li><Link href="https://x.com/" target="_blank"><i className="fa-brands fa-x-twitter"></i></Link></li>
                         <li><Link href="https://www.linkedin.com/feed/" target="_blank"><i className="fa-brands fa-linkedin-in"></i></Link></li>
                         <li><Link href="https://www.instagram.com/" target="_blank"><i className="fa-brands fa-instagram"></i></Link></li>

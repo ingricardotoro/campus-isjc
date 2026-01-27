@@ -76,7 +76,7 @@ const MainFooter = ({ children }: MainFooterProps) => {
                                             <div className="theme-social social-brand-color">
                                                
                                                 <ul className="social-icon-list">
-                                                <li><Link className="facebook" href="https://www.facebook.com/" target="_blank"><i className="fa-brands fa-facebook-f"></i></Link> </li>
+                                                <li><Link className="facebook" href="https://www.facebook.com/p/Instituto-San-Jos%C3%A9-Del-Carmen-100063924015070/?locale=es_LA" target="_blank"><i className="fa-brands fa-facebook-f"></i></Link> </li>
 
                                                    {/*  <li><Link className="twitter" href="https://x.com/" target="_blank"><i className="fa-brands fa-x-twitter"></i></Link>
                                                     </li>

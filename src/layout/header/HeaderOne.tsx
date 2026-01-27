@@ -32,20 +32,20 @@ const HeaderOne = () => {
                                     <Image style={{ width: "100%", height: "auto" }} src={headerLogo} alt='logo san jose del carmen' />
                                 </Link>
                             </div>
-                        </div>
-                        <div className="bd-header-menu">
-                            <nav className="main-menu bd-mobile-menu-active d-none d-xl-block">
-                                <CommonHeaderMainMenu />
-                            </nav>
+                            <div className="bd-header-menu">
+                                <nav className="main-menu bd-mobile-menu-active d-none d-xl-block">
+                                    <CommonHeaderMainMenu />
+                                </nav>
+                            </div>
                         </div>
                         <div className="bd-header-right">
-                            <div className="bd-header-sign-btn">
+                            <div className="bd-header-sign-btn d-none d-md-flex">
                                 <Link className="bd-btn bd-marquee-btn " href="/contactanos">
                                     <span data-text="Purchase Now">
                                         Contáctanos                                    </span>
                                 </Link>
                             </div>
-                            <div className="bd-header-hamburger">
+                            <div className="bd-header-hamburger d-block d-xl-none">
                                 <div className="sidebar-toggle">
                                     <Link onClick={toggleSidebarMenu} className="bar-icon" href="#">
                                         <span></span>

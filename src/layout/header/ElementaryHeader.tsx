@@ -11,7 +11,7 @@ import useGlobalContext from '@/hooks/useContexts';
 // import useCart from '@/hooks/useCart';
 
 const ElementaryHeader = () => {
-    const { scrollDirection } = useGlobalContext();
+    const { scrollDirection, toggleSidebarMenu } = useGlobalContext();
     const [openCart, setOpenCart] = useState(false)
     //cart quantity
     // const { getCartProductQuantity } = useCart();
@@ -36,6 +36,17 @@ const ElementaryHeader = () => {
                                 <nav className="main-menu bd-mobile-menu-active d-none d-xl-block">
                                     <CommonHeaderMainMenu />
                                 </nav>
+                            </div>
+                        </div>
+                        <div className="bd-header-right justify-content-end">
+                            <div className="bd-header-hamburger d-block d-xl-none">
+                                <div className="sidebar-toggle">
+                                    <Link onClick={toggleSidebarMenu} className="bar-icon" href="#">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

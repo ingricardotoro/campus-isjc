@@ -12,7 +12,7 @@ import useGlobalContext from '@/hooks/useContexts';
 import CommonHeaderMainMenu from './component/MainMenu';
 
 const HeaderThree = () => {
-    const { scrollDirection } = useGlobalContext();
+    const { scrollDirection, toggleSidebarMenu } = useGlobalContext();
     const [openCart, setOpenCart] = useState(false)
     //cart quantity
     //const { getCartProductQuantity } = useCart();
@@ -57,11 +57,18 @@ const HeaderThree = () => {
                                 </nav>
                             </div>
                             <div className="bd-header-right">
-                               
-                                <div className="bd-header-sign-btn">
+                                <div className="bd-header-sign-btn d-none d-md-flex">
                                     <Link className="bd-btn btn-outline-border-primary h-40px" href="/contactanos">Contáctanos</Link>
                                 </div>
-                               
+                                <div className="bd-header-hamburger d-block d-xl-none">
+                                    <div className="sidebar-toggle">
+                                        <Link onClick={toggleSidebarMenu} className="bar-icon" href="#">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
