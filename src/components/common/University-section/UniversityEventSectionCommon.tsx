@@ -1,5 +1,5 @@
 import React from 'react';
-import eventos from '../../../../public/assets/images/event/matricula.png';
+import eventos from '../../../../public/assets/images/course/math_event.jpeg';
 import shapeStar from '../../../../public/assets/images/shape/star.webp';
 import Image from 'next/image';
 import Link from 'next/link';
