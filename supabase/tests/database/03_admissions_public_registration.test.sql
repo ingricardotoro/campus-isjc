@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(49);
+select plan(50);
 
 -- Convenience wrapper over the long signature. It runs as the caller, so the
 -- role switches below still decide whether the function is reachable.
@@ -132,6 +132,14 @@ create temporary table visit_result on commit drop as
 select is(
   (select p.wants_visit from public.admissions_prospects p join visit_result r on r.prospect_id = p.id),
   true, 'a new prospect stores the visit request');
+
+-- A double submit of that registration repeats a visit request the prospect
+-- already holds, so staff get no redundant note.
+select pg_temp.register('Rosa Méndez', '99990001', null, 'Rosa', wants_visit => true);
+select is(
+  (select count(*)::int from public.admissions_activities a join visit_result r on r.prospect_id = a.prospect_id
+   where a.description like '%solicita una visita%'),
+  0, 'a double submit of a stored visit request adds no note');
 
 update public.admissions_prospects
 set status_id = (select id from public.admissions_statuses where code = 'NOT_INTERESTED')

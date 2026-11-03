@@ -449,6 +449,7 @@ declare
   v_differences text[] := '{}';
   v_note text;
   v_existing_closed_at timestamptz;
+  v_existing_wants_visit boolean;
 begin
   -- Every public input is validated before matching, so the same malformed
   -- value fails the same way whether or not it matches an existing guardian.
@@ -580,8 +581,8 @@ begin
 
     -- The row lock serializes repeats that reach the same prospect through
     -- different keys, which the advisory locks above do not cover.
-    select p.id, p.closed_at
-    into v_prospect_id, v_existing_closed_at
+    select p.id, p.closed_at, p.wants_visit
+    into v_prospect_id, v_existing_closed_at, v_existing_wants_visit
     from public.admissions_prospects p
     where p.guardian_id = v_guardian.id
       and p.academic_year_id = p_academic_year_id
@@ -591,8 +592,9 @@ begin
 
     -- A public repeat never changes a prospect that staff already manage. A
     -- visit request and a closed prospect showing interest again only reach
-    -- staff as a note, and staff decide what to do.
-    if p_wants_visit then
+    -- staff as a note, and staff decide what to do. A visit the prospect
+    -- already holds is not news, so a double submit adds no visit note.
+    if p_wants_visit and not v_existing_wants_visit then
       v_differences := v_differences || 'solicita una visita'::text;
     end if;
     if v_existing_closed_at is not null then
