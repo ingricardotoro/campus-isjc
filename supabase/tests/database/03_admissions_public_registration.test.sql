@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(33);
+select plan(47);
 
 -- Convenience wrapper over the long signature. It runs as the caller, so the
 -- role switches below still decide whether the function is reachable.
@@ -15,11 +15,12 @@ create function pg_temp.register(
   modality_code text default null,
   consent boolean default true,
   notice text default 'v1',
-  wants_visit boolean default false
+  wants_visit boolean default false,
+  contact_method text default 'whatsapp'
 ) returns table (prospect_id uuid, guardian_id uuid, is_new_prospect boolean)
 language sql as $$
   select * from public.admissions_register_public_interest(
-    guardian_name, phone, email, 'whatsapp', student,
+    guardian_name, phone, email, contact_method, student,
     (select id from public.admissions_academic_years a where a.year = 2027),
     (select id from public.admissions_grades g where g.code = grade_code),
     (select id from public.admissions_modalities m where m.code = modality_code),
@@ -103,6 +104,13 @@ select ok(
   (select a.description like '%solicita una visita%'
    from public.admissions_activities a join first_result r on r.prospect_id = a.prospect_id),
   'a new visit request on a repeated submission is noted');
+select is(
+  (select p.wants_visit from public.admissions_prospects p join first_result r on r.prospect_id = p.id),
+  true, 'a visit request on a repeated submission is stored on the prospect');
+select pg_temp.register('María López', '99991111', 'maria@example.com', 'Ana', wants_visit => true);
+select is(
+  (select count(*)::int from public.admissions_activities a join first_result r on r.prospect_id = a.prospect_id),
+  1, 'repeating the visit request adds no further note');
 update public.admissions_prospects
 set status_id = (select id from public.admissions_statuses where code = 'NOT_INTERESTED')
 where id = (select prospect_id from second_result);
@@ -111,6 +119,10 @@ select ok(
   (select a.description like '%ya estaba cerrado%'
    from public.admissions_activities a join second_result r on r.prospect_id = a.prospect_id),
   'renewed interest in a closed prospect is noted');
+select pg_temp.register('María López', '99991111', 'maria@example.com', 'Luis', 'GRADE_02');
+select is(
+  (select count(*)::int from public.admissions_activities a join second_result r on r.prospect_id = a.prospect_id),
+  1, 'an identical repeat on a closed prospect adds no duplicate note');
 
 -- A match on one key reuses the guardian, never overwrites it, and tells staff.
 create temporary table partial_result on commit drop as
@@ -125,6 +137,14 @@ select ok(
   (select a.description like '%Juan Pérez%' and a.description like '%otro@example.com%' and a.activity_type = 'system'
    from public.admissions_activities a join partial_result r on r.prospect_id = a.prospect_id),
   'differing contact data is kept in a system note');
+select pg_temp.register('Juan Pérez', '99991111', 'otro@example.com', 'Sofía');
+select is(
+  (select count(*)::int from public.admissions_activities a join partial_result r on r.prospect_id = a.prospect_id),
+  1, 'an identical repeat with differing data adds no duplicate note');
+select pg_temp.register('Juan Pérez', '99991111', 'tercero@example.com', 'Sofía');
+select is(
+  (select count(*)::int from public.admissions_activities a join partial_result r on r.prospect_id = a.prospect_id),
+  2, 'genuinely new differing data still adds a note');
 
 -- An email-only submission matches on email.
 create temporary table email_result on commit drop as
@@ -163,9 +183,38 @@ select throws_ok(
 select throws_ok(
   $$ select * from pg_temp.register('Sin contacto', null, '   ', 'X') $$,
   '22023', null, 'registration without phone or email is refused');
+
+-- Malformed contact data fails the same way whether or not a guardian matches.
 select throws_ok(
   $$ select * from pg_temp.register('Correo malo', null, 'no-es-correo', 'X') $$,
-  '23514', null, 'an invalid email is refused');
+  '22023', null, 'an invalid email is refused');
+select throws_ok(
+  $$ select * from pg_temp.register('María López', '99991111', 'no-es-correo', 'X') $$,
+  '22023', null, 'an invalid email is refused when the phone matches');
+select throws_ok(
+  $$ select * from pg_temp.register('Teléfono malo', '123', 'nuevo1@example.com', 'X') $$,
+  '22023', null, 'an invalid phone is refused');
+select throws_ok(
+  $$ select * from pg_temp.register('María López', '123', 'maria@example.com', 'X') $$,
+  '22023', null, 'an invalid phone is refused when the email matches');
+select throws_ok(
+  $$ select * from pg_temp.register('Letras', 'sin-numero', 'nuevo2@example.com', 'X') $$,
+  '22023', null, 'a phone without digits is refused instead of ignored');
+select throws_ok(
+  $$ select * from pg_temp.register('   ', '99998888', null, 'X') $$,
+  '22023', null, 'a blank guardian name is refused');
+select throws_ok(
+  $$ select * from pg_temp.register('   ', '99991111', null, 'X') $$,
+  '22023', null, 'a blank guardian name is refused when the phone matches');
+select throws_ok(
+  $$ select * from pg_temp.register(null, '99998888', null, 'X') $$,
+  '22023', null, 'a missing guardian name is refused');
+select throws_ok(
+  $$ select * from pg_temp.register('Método malo', '99998888', null, 'X', contact_method => 'fax') $$,
+  '22023', null, 'an unknown preferred contact method is refused');
+select throws_ok(
+  $$ select * from pg_temp.register('María López', '99991111', null, 'X', contact_method => 'fax') $$,
+  '22023', null, 'an unknown preferred contact method is refused when the phone matches');
 select throws_ok(
   $$ select * from pg_temp.register('Grado cerrado', '99996666', null, 'X', 'GRADE_12') $$,
   '22023', null, 'an inactive grade is refused');

@@ -447,7 +447,27 @@ declare
   v_prospect_id uuid;
   v_is_new_prospect boolean := true;
   v_differences text[] := '{}';
+  v_note text;
+  v_existing_wants_visit boolean;
+  v_existing_closed_at timestamptz;
 begin
+  -- Every public input is validated before matching, so the same malformed
+  -- value fails the same way whether or not it matches an existing guardian.
+  -- The rules mirror the admissions_guardians CHECK constraints.
+  if public.admissions_normalize_name(p_guardian_name) is null then
+    raise exception 'guardian name is required' using errcode = '22023';
+  end if;
+  if nullif(btrim(coalesce(p_phone, '')), '') is not null
+     and (v_phone is null or v_phone !~ '^[0-9]{8,15}$') then
+    raise exception 'phone is not valid' using errcode = '22023';
+  end if;
+  if v_email is not null and v_email !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$' then
+    raise exception 'email is not valid' using errcode = '22023';
+  end if;
+  if p_preferred_contact_method is not null
+     and p_preferred_contact_method not in ('phone', 'whatsapp', 'email') then
+    raise exception 'preferred contact method is not valid' using errcode = '22023';
+  end if;
   if p_consent_to_contact is not true then
     raise exception 'consent to contact is required' using errcode = '22023';
   end if;
@@ -559,35 +579,44 @@ begin
   if v_prospect_id is null then
     v_is_new_prospect := false;
 
-    select p.id into v_prospect_id
+    -- The row lock serializes repeats that reach the same prospect through
+    -- different keys, which the advisory locks above do not cover.
+    select p.id, p.wants_visit, p.closed_at
+    into v_prospect_id, v_existing_wants_visit, v_existing_closed_at
     from public.admissions_prospects p
     where p.guardian_id = v_guardian.id
       and p.academic_year_id = p_academic_year_id
       and p.grade_id = p_grade_id
-      and coalesce(p.student_name_normalized, '') = coalesce(public.admissions_normalize_name(p_student_name), '');
+      and coalesce(p.student_name_normalized, '') = coalesce(public.admissions_normalize_name(p_student_name), '')
+    for update;
 
-    -- A repeat submission changes nothing, so anything staff should act on has to
-    -- go in the note: a new visit request, or a closed prospect showing interest.
-    if p_wants_visit and exists (
-      select 1 from public.admissions_prospects p where p.id = v_prospect_id and not p.wants_visit
-    ) then
+    -- A repeat changes no guardian data. A new visit request is stored, since
+    -- it only adds information, and staff are told about it and about a closed
+    -- prospect showing interest again.
+    if p_wants_visit and not v_existing_wants_visit then
+      update public.admissions_prospects p set wants_visit = true where p.id = v_prospect_id;
       v_differences := v_differences || 'solicita una visita'::text;
     end if;
-    if exists (
-      select 1 from public.admissions_prospects p where p.id = v_prospect_id and p.closed_at is not null
-    ) then
+    if v_existing_closed_at is not null then
       v_differences := v_differences || 'el prospecto ya estaba cerrado'::text;
     end if;
   end if;
 
+  -- Activities are append-only, so a retried or double submission must not
+  -- repeat a note: a system note identical to one already on the prospect is
+  -- skipped. Any new difference changes the text and is still recorded.
   if cardinality(v_differences) > 0 then
-    insert into public.admissions_activities (prospect_id, activity_type, description)
-    values (
-      v_prospect_id,
-      'system',
-      'Registro público repetido o con diferencias, revisar: '
-        || array_to_string(v_differences, '; ') || '.'
-    );
+    v_note := 'Registro público repetido o con diferencias, revisar: '
+      || array_to_string(v_differences, '; ') || '.';
+    if not exists (
+      select 1 from public.admissions_activities a
+      where a.prospect_id = v_prospect_id
+        and a.activity_type = 'system'
+        and a.description = v_note
+    ) then
+      insert into public.admissions_activities (prospect_id, activity_type, description)
+      values (v_prospect_id, 'system', v_note);
+    end if;
   end if;
 
   prospect_id := v_prospect_id;
