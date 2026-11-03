@@ -2,7 +2,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(47);
+select plan(49);
 
 -- Convenience wrapper over the long signature. It runs as the caller, so the
 -- role switches below still decide whether the function is reachable.
@@ -98,19 +98,41 @@ select is(
   (select count(*)::int from public.admissions_status_history h join first_result r on r.prospect_id = h.prospect_id),
   1, 'a repeated submission adds no status history');
 
--- A repeat that changes nothing still reaches staff when there is something to do.
+-- A repeat that requests a visit tells staff with a note and never changes
+-- the prospect itself: staff decide what to do with the request.
 select pg_temp.register('María López', '99991111', 'maria@example.com', 'Ana', wants_visit => true);
-select ok(
-  (select a.description like '%solicita una visita%'
-   from public.admissions_activities a join first_result r on r.prospect_id = a.prospect_id),
-  'a new visit request on a repeated submission is noted');
+select is(
+  (select count(*)::int from public.admissions_activities a join first_result r on r.prospect_id = a.prospect_id
+   where a.description like '%solicita una visita%'),
+  1, 'a visit request on a repeated submission adds exactly one note');
 select is(
   (select p.wants_visit from public.admissions_prospects p join first_result r on r.prospect_id = p.id),
-  true, 'a visit request on a repeated submission is stored on the prospect');
+  false, 'a visit request on a repeated submission leaves the prospect unchanged');
+
+-- Retries and double submits within 24 hours are absorbed.
 select pg_temp.register('María López', '99991111', 'maria@example.com', 'Ana', wants_visit => true);
 select is(
   (select count(*)::int from public.admissions_activities a join first_result r on r.prospect_id = a.prospect_id),
-  1, 'repeating the visit request adds no further note');
+  1, 'an identical visit request within 24 hours adds no further note');
+
+-- An identical note older than 24 hours is a new signal, not a retry.
+reset role;
+update public.admissions_activities a
+set occurred_at = a.occurred_at - interval '25 hours'
+where a.prospect_id = (select prospect_id from first_result);
+set local role service_role;
+select pg_temp.register('María López', '99991111', 'maria@example.com', 'Ana', wants_visit => true);
+select is(
+  (select count(*)::int from public.admissions_activities a join first_result r on r.prospect_id = a.prospect_id),
+  2, 'an identical note older than 24 hours does not block a new one');
+
+-- A new prospect still stores the visit request from the submission.
+create temporary table visit_result on commit drop as
+  select * from pg_temp.register('Rosa Méndez', '99990001', null, 'Rosa', wants_visit => true);
+select is(
+  (select p.wants_visit from public.admissions_prospects p join visit_result r on r.prospect_id = p.id),
+  true, 'a new prospect stores the visit request');
+
 update public.admissions_prospects
 set status_id = (select id from public.admissions_statuses where code = 'NOT_INTERESTED')
 where id = (select prospect_id from second_result);

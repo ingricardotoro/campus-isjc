@@ -448,7 +448,6 @@ declare
   v_is_new_prospect boolean := true;
   v_differences text[] := '{}';
   v_note text;
-  v_existing_wants_visit boolean;
   v_existing_closed_at timestamptz;
 begin
   -- Every public input is validated before matching, so the same malformed
@@ -581,8 +580,8 @@ begin
 
     -- The row lock serializes repeats that reach the same prospect through
     -- different keys, which the advisory locks above do not cover.
-    select p.id, p.wants_visit, p.closed_at
-    into v_prospect_id, v_existing_wants_visit, v_existing_closed_at
+    select p.id, p.closed_at
+    into v_prospect_id, v_existing_closed_at
     from public.admissions_prospects p
     where p.guardian_id = v_guardian.id
       and p.academic_year_id = p_academic_year_id
@@ -590,11 +589,10 @@ begin
       and coalesce(p.student_name_normalized, '') = coalesce(public.admissions_normalize_name(p_student_name), '')
     for update;
 
-    -- A repeat changes no guardian data. A new visit request is stored, since
-    -- it only adds information, and staff are told about it and about a closed
-    -- prospect showing interest again.
-    if p_wants_visit and not v_existing_wants_visit then
-      update public.admissions_prospects p set wants_visit = true where p.id = v_prospect_id;
+    -- A public repeat never changes a prospect that staff already manage. A
+    -- visit request and a closed prospect showing interest again only reach
+    -- staff as a note, and staff decide what to do.
+    if p_wants_visit then
       v_differences := v_differences || 'solicita una visita'::text;
     end if;
     if v_existing_closed_at is not null then
@@ -602,9 +600,11 @@ begin
     end if;
   end if;
 
-  -- Activities are append-only, so a retried or double submission must not
-  -- repeat a note: a system note identical to one already on the prospect is
-  -- skipped. Any new difference changes the text and is still recorded.
+  -- Activities are append-only. To absorb retries and double submits, a system
+  -- note identical to one recorded on the same prospect in the last 24 hours is
+  -- skipped. An older identical note is a new signal and is recorded again, as
+  -- is any new difference, since it changes the text. The prospect row lock
+  -- above serializes this check for repeats.
   if cardinality(v_differences) > 0 then
     v_note := 'Registro público repetido o con diferencias, revisar: '
       || array_to_string(v_differences, '; ') || '.';
@@ -613,6 +613,7 @@ begin
       where a.prospect_id = v_prospect_id
         and a.activity_type = 'system'
         and a.description = v_note
+        and a.occurred_at > now() - interval '24 hours'
     ) then
       insert into public.admissions_activities (prospect_id, activity_type, description)
       values (v_prospect_id, 'system', v_note);
