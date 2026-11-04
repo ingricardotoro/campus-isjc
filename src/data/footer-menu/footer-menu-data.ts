@@ -145,6 +145,7 @@ export const CommonFooterMenuLinks = [
     spacingClass: 'footer-1-col-3',
     links: [
       { name: 'Contáctanos', href: '/contactanos' },
+      { name: 'Admisiones', href: '/admisiones-2027' },
       { name: 'Matrícula', href: '/matricula' },
       { name: 'Pre - Básica', href: '/prebasica' },
       { name: 'Básica', href: '/basica' },
