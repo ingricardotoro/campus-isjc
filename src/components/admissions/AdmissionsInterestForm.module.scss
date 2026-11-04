@@ -10,9 +10,26 @@
   overflow: hidden;
 }
 
+.requiredNote {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+// Bootstrap floats legends and enlarges their font; the h2 inside sets the size.
+.legend,
+.fieldLegend {
+  float: none;
+  width: 100%;
+  padding: 0;
+}
+
+.legend {
+  margin-bottom: 4px;
+}
+
 .sectionTitle {
   font-size: 20px;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .sectionHint {
@@ -20,10 +37,24 @@
   margin-bottom: 0;
 }
 
+.fieldLegend {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--bd-black);
+  margin-bottom: 8px;
+}
+
 .fieldError {
   color: #b42318;
-  font-size: 13px;
+  font-size: 14px;
   margin: 6px 0 0;
+}
+
+.errorSummary {
+  color: #b42318;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 12px;
 }
 
 // The theme title-cases every label, which reads badly in full sentences.
@@ -38,6 +69,37 @@
   padding-left: 13px;
 }
 
+// Radios keep the theme's drawn circle; the label gets a 44px tall tap area.
+.radioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+}
+
+.radioOption {
+  position: relative;
+
+  label {
+    display: inline-block;
+    padding-block: 10px;
+    font-size: 16px;
+  }
+
+  // The theme positions the circle from the label top; shift it by the padding.
+  input[type="radio"] ~ label::before {
+    top: 13px;
+  }
+
+  input[type="radio"] ~ label::after {
+    top: 17px;
+  }
+
+  input[type="radio"]:focus-visible ~ label::before {
+    outline: 2px solid var(--bd-primary);
+    outline-offset: 2px;
+  }
+}
+
 .privacyNotice {
   background-color: #f6f7f9;
   border-radius: 6px;
@@ -48,6 +110,11 @@
   p:last-child {
     margin-bottom: 0;
   }
+}
+
+.privacyTitle {
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 // The theme hides every checkbox (display: none) and draws a box on the label,
@@ -89,4 +156,12 @@
   &:focus {
     outline: none;
   }
+
+  p {
+    margin-bottom: 16px;
+  }
+}
+
+.successTitle {
+  margin-bottom: 15px;
 }

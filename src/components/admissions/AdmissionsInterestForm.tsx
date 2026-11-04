@@ -39,6 +39,15 @@ type Props = {
 
 const GENERIC_ERROR = "No pudimos enviar su solicitud. Por favor, intente nuevamente.";
 
+// Public institute contact, as shown in the site header.
+const INSTITUTE_PHONE = { href: "tel:+50422365298", label: "(+504) 2236-5298" };
+const INSTITUTE_EMAIL = "info@sanjosedelcarmen.edu.hn";
+
+const CONTACT_OPTIONS: Array<{ value: "" | ContactMethod; label: string }> = [
+  { value: "", label: "Sin preferencia" },
+  ...CONTACT_METHODS.map((method) => ({ value: method, label: CONTACT_METHOD_LABELS[method] })),
+];
+
 /** Validates with the same schema the API uses, so both sides agree. */
 const zodResolver: Resolver<FormValues> = async (values) => {
   const result = admissionsInterestSchema.safeParse(values);
@@ -75,27 +84,46 @@ function groupGradesByLevel(grades: CatalogGrade[]) {
   return groups;
 }
 
+// Not a live region: a single summary near the submit button announces errors,
+// so a form submitted empty does not read every message at once.
 function FieldErrorText({ id, error }: { id: string; error?: FieldError }) {
   if (!error?.message) return null;
   return (
-    <p id={id} className={styles.fieldError} role="alert">
+    <p id={id} className={styles.fieldError}>
       {error.message}
     </p>
   );
 }
 
-function SectionHeading({ title, hint }: { title: string; hint?: string }) {
+function RequiredMark() {
+  return <span aria-hidden="true">*</span>;
+}
+
+/** Groups related fields so screen readers announce the section on entry. */
+function FormSection({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="col-12">
-      <h3 className={styles.sectionTitle}>{title}</h3>
+    <fieldset className={`col-12 ${styles.section}`}>
+      <legend className={styles.legend}>
+        <h2 className={styles.sectionTitle}>{title}</h2>
+      </legend>
       {hint ? <p className={styles.sectionHint}>{hint}</p> : null}
-    </div>
+      <div className="row gy-30 mt-0">{children}</div>
+    </fieldset>
   );
 }
 
 const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [restarted, setRestarted] = useState(false);
   const startedAt = useRef<number | null>(null);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -107,9 +135,14 @@ const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    getValues,
+    reset,
+    setFocus,
+    formState: { errors, submitCount },
   } = useForm<FormValues>({
     resolver: zodResolver,
+    // Validate each field when the family leaves it, not only on submit.
+    mode: "onTouched",
     defaultValues: {
       guardianName: "",
       phone: "",
@@ -143,6 +176,11 @@ const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
     if (submitted) successRef.current?.focus();
   }, [submitted]);
 
+  // After "send another request", start where the new data goes.
+  useEffect(() => {
+    if (restarted && !submitted) setFocus("studentName");
+  }, [restarted, submitted, setFocus]);
+
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
@@ -159,10 +197,7 @@ const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
       });
 
       if (response.ok) {
-        toast.success("¡Solicitud enviada!", {
-          description: "Nuestro equipo de admisiones se comunicará con usted pronto.",
-          duration: 6000,
-        });
+        // The focused success panel is the confirmation; a toast would repeat it.
         setSubmitted(true);
         return;
       }
@@ -182,20 +217,45 @@ const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
     }
   };
 
+  /** Keeps the guardian's contact data, e.g. to register a sibling. */
+  const startAnotherRequest = () => {
+    reset({
+      ...getValues(),
+      studentName: "",
+      gradeId: "",
+      modalityId: "",
+      wantsVisit: false,
+      consentToContact: false,
+      website: "",
+    });
+    startedAt.current = Date.now();
+    setRestarted(true);
+    setSubmitted(false);
+  };
+
   if (submitted) {
     return (
       <div ref={successRef} className={styles.success} role="status" tabIndex={-1}>
-        <h3 className="mb-15">¡Gracias por su interés!</h3>
-        <p className="mb-0">
+        <h2 className={styles.successTitle}>¡Gracias por su interés!</h2>
+        <p>
           Recibimos su solicitud. Nuestro equipo de admisiones se comunicará con usted por el medio
           de contacto que nos indicó para orientarle sobre los siguientes pasos.
         </p>
+        <p>
+          Si tiene alguna consulta, puede llamarnos al{" "}
+          <a href={INSTITUTE_PHONE.href}>{INSTITUTE_PHONE.label}</a> o escribirnos a{" "}
+          <a href={`mailto:${INSTITUTE_EMAIL}`}>{INSTITUTE_EMAIL}</a>.
+        </p>
+        <button type="button" className="bd-btn btn-outline-primary" onClick={startAnotherRequest}>
+          Enviar otra solicitud
+        </button>
       </div>
     );
   }
 
   const describedBy = (field: keyof FormValues) =>
     errors[field] ? `${field}-error` : undefined;
+  const errorCount = Object.keys(errors).length;
 
   return (
     <form
@@ -205,238 +265,242 @@ const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
       aria-label="Formulario de interés de admisión"
     >
       <div className="row gy-30">
-        <SectionHeading title="Datos del encargado" hint="Persona con quien nos comunicaremos." />
-
-        <div className="col-md-12">
-          <div className="form-input-box">
-            <div className="form-input-title">
-              <label htmlFor="guardianName">
-                Nombre completo<span>*</span>
-              </label>
-            </div>
-            <div className="form-input">
-              <input
-                {...register("guardianName")}
-                id="guardianName"
-                type="text"
-                autoComplete="name"
-                maxLength={FIELD_MAX_LENGTH.name}
-                placeholder="Nombre y apellidos"
-                aria-required="true"
-                aria-invalid={errors.guardianName ? "true" : "false"}
-                aria-describedby={describedBy("guardianName")}
-              />
-              <FieldErrorText id="guardianName-error" error={errors.guardianName} />
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6">
-          <div className="form-input-box">
-            <div className="form-input-title">
-              <label htmlFor="phone">Teléfono</label>
-            </div>
-            <div className="form-input">
-              <input
-                {...register("phone")}
-                id="phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                maxLength={FIELD_MAX_LENGTH.phone}
-                placeholder="Ej. 9999-9999"
-                aria-invalid={errors.phone ? "true" : "false"}
-                aria-describedby={errors.phone ? "phone-error contact-hint" : "contact-hint"}
-              />
-              <FieldErrorText id="phone-error" error={errors.phone} />
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6">
-          <div className="form-input-box">
-            <div className="form-input-title">
-              <label htmlFor="email">Correo electrónico</label>
-            </div>
-            <div className="form-input">
-              <input
-                {...register("email")}
-                id="email"
-                type="email"
-                autoComplete="email"
-                maxLength={FIELD_MAX_LENGTH.email}
-                placeholder="nombre@correo.com"
-                aria-invalid={errors.email ? "true" : "false"}
-                aria-describedby={errors.email ? "email-error contact-hint" : "contact-hint"}
-              />
-              <FieldErrorText id="email-error" error={errors.email} />
-            </div>
-          </div>
-        </div>
-
         <div className="col-12">
-          <p id="contact-hint" className={styles.sectionHint}>
-            Indique al menos un teléfono o un correo electrónico.
-          </p>
+          <p className={styles.requiredNote}>Los campos marcados con un asterisco (*) son obligatorios.</p>
         </div>
 
-        <div className="col-md-12">
-          <div className="form-input-box">
-            <div className="form-input-title">
-              <label htmlFor="preferredContactMethod">Medio de contacto preferido</label>
+        <FormSection title="Datos del encargado" hint="Persona con quien nos comunicaremos.">
+          <div className="col-md-12">
+            <div className="form-input-box">
+              <div className="form-input-title">
+                <label htmlFor="guardianName">
+                  Nombre completo
+                  <RequiredMark />
+                </label>
+              </div>
+              <div className="form-input">
+                <input
+                  {...register("guardianName")}
+                  id="guardianName"
+                  type="text"
+                  autoComplete="name"
+                  maxLength={FIELD_MAX_LENGTH.name}
+                  placeholder="Nombre y apellidos"
+                  aria-required="true"
+                  aria-invalid={errors.guardianName ? "true" : "false"}
+                  aria-describedby={describedBy("guardianName")}
+                />
+                <FieldErrorText id="guardianName-error" error={errors.guardianName} />
+              </div>
             </div>
-            <div className="form-input">
-              <select
-                {...register("preferredContactMethod")}
-                id="preferredContactMethod"
-                className={`form-select ${styles.select}`}
-                aria-invalid={errors.preferredContactMethod ? "true" : "false"}
-                aria-describedby={describedBy("preferredContactMethod")}
-              >
-                <option value="">Sin preferencia</option>
-                {CONTACT_METHODS.map((method) => (
-                  <option key={method} value={method}>
-                    {CONTACT_METHOD_LABELS[method]}
-                  </option>
-                ))}
-              </select>
+          </div>
+
+          <div className="col-12">
+            <p id="contact-hint" className={styles.sectionHint}>
+              Indique al menos un teléfono o un correo electrónico.
+            </p>
+          </div>
+
+          <div className="col-md-6">
+            <div className="form-input-box">
+              <div className="form-input-title">
+                <label htmlFor="phone">Teléfono</label>
+              </div>
+              <div className="form-input">
+                <input
+                  {...register("phone", { deps: ["email"] })}
+                  id="phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  maxLength={FIELD_MAX_LENGTH.phone}
+                  placeholder="Ej. 9999-9999"
+                  aria-invalid={errors.phone ? "true" : "false"}
+                  aria-describedby={errors.phone ? "phone-error contact-hint" : "contact-hint"}
+                />
+                <FieldErrorText id="phone-error" error={errors.phone} />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6">
+            <div className="form-input-box">
+              <div className="form-input-title">
+                <label htmlFor="email">Correo electrónico</label>
+              </div>
+              <div className="form-input">
+                <input
+                  {...register("email", { deps: ["phone"] })}
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  maxLength={FIELD_MAX_LENGTH.email}
+                  placeholder="nombre@correo.com"
+                  aria-invalid={errors.email ? "true" : "false"}
+                  aria-describedby={errors.email ? "email-error contact-hint" : "contact-hint"}
+                />
+                <FieldErrorText id="email-error" error={errors.email} />
+              </div>
+            </div>
+          </div>
+
+          <div className="col-12">
+            <fieldset aria-describedby={describedBy("preferredContactMethod")}>
+              <legend className={styles.fieldLegend}>Medio de contacto preferido</legend>
+              <div className={styles.radioGroup}>
+                {CONTACT_OPTIONS.map((option) => {
+                  const id = `preferredContactMethod-${option.value || "none"}`;
+                  return (
+                    <div key={id} className={styles.radioOption}>
+                      <input
+                        {...register("preferredContactMethod")}
+                        id={id}
+                        type="radio"
+                        value={option.value}
+                      />
+                      <label htmlFor={id}>{option.label}</label>
+                    </div>
+                  );
+                })}
+              </div>
               <FieldErrorText
                 id="preferredContactMethod-error"
                 error={errors.preferredContactMethod}
               />
-            </div>
+            </fieldset>
           </div>
-        </div>
+        </FormSection>
 
-        <SectionHeading title="Datos del estudiante" />
-
-        <div className="col-md-12">
-          <div className="form-input-box">
-            <div className="form-input-title">
-              <label htmlFor="studentName">Nombre del estudiante (opcional)</label>
-            </div>
-            <div className="form-input">
-              <input
-                {...register("studentName")}
-                id="studentName"
-                type="text"
-                autoComplete="off"
-                maxLength={FIELD_MAX_LENGTH.name}
-                placeholder="Nombre del estudiante"
-                aria-invalid={errors.studentName ? "true" : "false"}
-                aria-describedby={describedBy("studentName")}
-              />
-              <FieldErrorText id="studentName-error" error={errors.studentName} />
-            </div>
-          </div>
-        </div>
-
-        <SectionHeading title="Interés académico" />
-
-        {singleYear ? (
-          <input type="hidden" {...register("academicYearId")} />
-        ) : (
+        <FormSection title="Datos del estudiante">
           <div className="col-md-12">
             <div className="form-input-box">
               <div className="form-input-title">
-                <label htmlFor="academicYearId">
-                  Año académico<span>*</span>
+                <label htmlFor="studentName">Nombre del estudiante (opcional)</label>
+              </div>
+              <div className="form-input">
+                <input
+                  {...register("studentName")}
+                  id="studentName"
+                  type="text"
+                  autoComplete="off"
+                  maxLength={FIELD_MAX_LENGTH.name}
+                  placeholder="Nombre del estudiante"
+                  aria-invalid={errors.studentName ? "true" : "false"}
+                  aria-describedby={describedBy("studentName")}
+                />
+                <FieldErrorText id="studentName-error" error={errors.studentName} />
+              </div>
+            </div>
+          </div>
+        </FormSection>
+
+        <FormSection title="Interés académico">
+          {singleYear ? (
+            <input type="hidden" {...register("academicYearId")} />
+          ) : (
+            <div className="col-md-12">
+              <div className="form-input-box">
+                <div className="form-input-title">
+                  <label htmlFor="academicYearId">
+                    Año académico
+                    <RequiredMark />
+                  </label>
+                </div>
+                <div className="form-input">
+                  <select
+                    {...register("academicYearId")}
+                    id="academicYearId"
+                    className={`form-select ${styles.select}`}
+                    aria-required="true"
+                    aria-invalid={errors.academicYearId ? "true" : "false"}
+                    aria-describedby={describedBy("academicYearId")}
+                  >
+                    <option value="">Seleccione un año</option>
+                    {catalog.academicYears.map((year) => (
+                      <option key={year.id} value={year.id}>
+                        {year.name}
+                      </option>
+                    ))}
+                  </select>
+                  <FieldErrorText id="academicYearId-error" error={errors.academicYearId} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className={modalities.length > 0 ? "col-md-6" : "col-md-12"}>
+            <div className="form-input-box">
+              <div className="form-input-title">
+                <label htmlFor="gradeId">
+                  Grado de interés{singleYear ? ` (${singleYear.name})` : ""}
+                  <RequiredMark />
                 </label>
               </div>
               <div className="form-input">
                 <select
-                  {...register("academicYearId")}
-                  id="academicYearId"
+                  {...register("gradeId")}
+                  id="gradeId"
                   className={`form-select ${styles.select}`}
                   aria-required="true"
-                  aria-invalid={errors.academicYearId ? "true" : "false"}
-                  aria-describedby={describedBy("academicYearId")}
+                  aria-invalid={errors.gradeId ? "true" : "false"}
+                  aria-describedby={describedBy("gradeId")}
                 >
-                  <option value="">Seleccione un año</option>
-                  {catalog.academicYears.map((year) => (
-                    <option key={year.id} value={year.id}>
-                      {year.name}
-                    </option>
+                  <option value="">Seleccione un grado</option>
+                  {gradeGroups.map((group) => (
+                    <optgroup key={group.level} label={group.level}>
+                      {group.grades.map((grade) => (
+                        <option key={grade.id} value={grade.id}>
+                          {grade.name}
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
-                <FieldErrorText id="academicYearId-error" error={errors.academicYearId} />
+                <FieldErrorText id="gradeId-error" error={errors.gradeId} />
               </div>
             </div>
           </div>
-        )}
 
-        <div className={modalities.length > 0 ? "col-md-6" : "col-md-12"}>
-          <div className="form-input-box">
-            <div className="form-input-title">
-              <label htmlFor="gradeId">
-                Grado de interés{singleYear ? ` (${singleYear.name})` : ""}
-                <span>*</span>
-              </label>
-            </div>
-            <div className="form-input">
-              <select
-                {...register("gradeId")}
-                id="gradeId"
-                className={`form-select ${styles.select}`}
-                aria-required="true"
-                aria-invalid={errors.gradeId ? "true" : "false"}
-                aria-describedby={describedBy("gradeId")}
-              >
-                <option value="">Seleccione un grado</option>
-                {gradeGroups.map((group) => (
-                  <optgroup key={group.level} label={group.level}>
-                    {group.grades.map((grade) => (
-                      <option key={grade.id} value={grade.id}>
-                        {grade.name}
+          {modalities.length > 0 ? (
+            <div className="col-md-6">
+              <div className="form-input-box">
+                <div className="form-input-title">
+                  <label htmlFor="modalityId">Modalidad</label>
+                </div>
+                <div className="form-input">
+                  <select
+                    {...register("modalityId")}
+                    id="modalityId"
+                    className={`form-select ${styles.select}`}
+                    aria-invalid={errors.modalityId ? "true" : "false"}
+                    aria-describedby={describedBy("modalityId")}
+                  >
+                    <option value="">No estoy seguro</option>
+                    {modalities.map((modality) => (
+                      <option key={modality.id} value={modality.id}>
+                        {modality.name}
                       </option>
                     ))}
-                  </optgroup>
-                ))}
-              </select>
-              <FieldErrorText id="gradeId-error" error={errors.gradeId} />
-            </div>
-          </div>
-        </div>
-
-        {modalities.length > 0 ? (
-          <div className="col-md-6">
-            <div className="form-input-box">
-              <div className="form-input-title">
-                <label htmlFor="modalityId">Modalidad</label>
-              </div>
-              <div className="form-input">
-                <select
-                  {...register("modalityId")}
-                  id="modalityId"
-                  className={`form-select ${styles.select}`}
-                  aria-invalid={errors.modalityId ? "true" : "false"}
-                  aria-describedby={describedBy("modalityId")}
-                >
-                  <option value="">No estoy seguro</option>
-                  {modalities.map((modality) => (
-                    <option key={modality.id} value={modality.id}>
-                      {modality.name}
-                    </option>
-                  ))}
-                </select>
-                <FieldErrorText id="modalityId-error" error={errors.modalityId} />
+                  </select>
+                  <FieldErrorText id="modalityId-error" error={errors.modalityId} />
+                </div>
               </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        <div className="col-12">
-          <div className={styles.checkboxField}>
-            <input {...register("wantsVisit")} id="wantsVisit" type="checkbox" />
-            <label htmlFor="wantsVisit">Me gustaría agendar una visita al Instituto.</label>
+          <div className="col-12">
+            <div className={styles.checkboxField}>
+              <input {...register("wantsVisit")} id="wantsVisit" type="checkbox" />
+              <label htmlFor="wantsVisit">Me gustaría agendar una visita al Instituto.</label>
+            </div>
           </div>
-        </div>
+        </FormSection>
 
         <div className="col-12">
           <section className={styles.privacyNotice} aria-labelledby="privacy-notice-title">
-            <h4 id="privacy-notice-title" className="mb-10" style={{ fontSize: "16px" }}>
+            <h2 id="privacy-notice-title" className={styles.privacyTitle}>
               {PRIVACY_NOTICE_TITLE}
-            </h4>
+            </h2>
             {PRIVACY_NOTICE_PARAGRAPHS.map((paragraph) => (
               <p key={paragraph} className="mb-10">
                 {paragraph}
@@ -457,7 +521,7 @@ const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
             />
             <label htmlFor="consentToContact">
               {CONSENT_LABEL}
-              <span aria-hidden="true">*</span>
+              <RequiredMark />
             </label>
           </div>
           <FieldErrorText id="consentToContact-error" error={errors.consentToContact} />
@@ -476,6 +540,13 @@ const AdmissionsInterestForm: React.FC<Props> = ({ catalog }) => {
         </div>
 
         <div className="col-12">
+          {submitCount > 0 && errorCount > 0 ? (
+            <p className={styles.errorSummary} role="alert">
+              {errorCount === 1
+                ? "Revise el campo marcado para poder enviar su solicitud."
+                : `Revise los ${errorCount} campos marcados para poder enviar su solicitud.`}
+            </p>
+          ) : null}
           <div className="bd-contact-form-btn">
             <button className="bd-btn btn-primary w-100" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
