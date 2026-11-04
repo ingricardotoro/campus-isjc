@@ -131,6 +131,15 @@ describe("POST /api/admissions", () => {
     expect(rpc).not.toHaveBeenCalled();
   });
 
+  it("registers a family whose device clock runs ahead of the server", async () => {
+    rpcReturns(true);
+
+    const response = await post(validBody({ startedAt: Date.now() + 60_000 }));
+
+    expect(response.status).toBe(200);
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
   it("silently accepts a submission without a render timestamp", async () => {
     const response = await post(validBody({ startedAt: undefined }));
 

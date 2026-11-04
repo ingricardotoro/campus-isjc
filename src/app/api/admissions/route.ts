@@ -67,7 +67,12 @@ function looksAutomated(body: Record<string, unknown>): boolean {
 
   const startedAt = body[STARTED_AT_FIELD];
   if (typeof startedAt !== "number" || !Number.isFinite(startedAt)) return true;
-  return Date.now() - startedAt < MIN_FILL_TIME_MS;
+
+  // The timestamp comes from the device clock. A negative value means that clock
+  // runs ahead of the server, not that the form was filled instantly: discarding
+  // it would lose a real family while showing them a success message.
+  const elapsed = Date.now() - startedAt;
+  return elapsed >= 0 && elapsed < MIN_FILL_TIME_MS;
 }
 
 export async function POST(request: NextRequest) {
