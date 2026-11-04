@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "clean": "rm -rf package-lock.json .next yarn.lock node_modules && yarn install",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -40,10 +41,12 @@
     "redux-persist": "^6.0.0",
     "resend": "^6.5.2",
     "sass": "^1.32.13",
+    "server-only": "^0.0.1",
     "sonner": "^1.7.1",
     "swiper": "^11.2.1",
     "typed.js": "^2.1.0",
-    "wow.js": "^1.2.2"
+    "wow.js": "^1.2.2",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -53,6 +56,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
-    "typescript": "^5"
+    "supabase": "^3.0.0",
+    "typescript": "^5",
+    "vitest": "^4.1.12"
   }
 }

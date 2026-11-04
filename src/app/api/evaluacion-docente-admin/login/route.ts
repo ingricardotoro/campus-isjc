@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isEvaluationAdmin } from "@/lib/evaluacion-docente/admin-access";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
@@ -13,12 +14,21 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       return NextResponse.json(
         { error: "Credenciales inválidas." },
         { status: 401 }
+      );
+    }
+
+    if (!isEvaluationAdmin(data.user)) {
+      // Local scope ends only this session: the Auth project is shared with other modules.
+      await supabase.auth.signOut({ scope: "local" });
+      return NextResponse.json(
+        { error: "Esta cuenta no tiene acceso a este módulo." },
+        { status: 403 }
       );
     }
 

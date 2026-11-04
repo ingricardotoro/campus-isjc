@@ -125,6 +125,16 @@ const main_menu_data: MenuItem[] = [
     ]
   },
   {
+    id: 7,
+    hasDropdown: false,
+    active: true,
+    megaMenu: false,
+    children: false,
+    title: "Admisiones",
+    pluseIncon: false,
+    link: "/admisiones-2027",
+  },
+  {
     id: 4,
     hasDropdown: false,
     active: true,

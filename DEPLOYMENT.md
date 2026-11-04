@@ -46,6 +46,17 @@ NEXT_PUBLIC_CONTACT_EMAIL=info@sanjosedelcarmen.edu.hn
    - Name: `NEXT_PUBLIC_CONTACT_EMAIL`
    - Value: `info@sanjosedelcarmen.edu.hn`
 
+**Acceso a Evaluación Docente (administración):**
+```
+EVAL_ADMIN_EMAILS=admin@example.com,otra-persona@example.com
+```
+
+- Lista separada por comas de los correos que pueden entrar a `/evaluacion-docente-admin`. No distingue mayúsculas y se ignoran los espacios.
+- Solo se aceptan coincidencias exactas de cuentas con el correo confirmado en Supabase Auth.
+- Es una variable solo de servidor: nunca le agregues el prefijo `NEXT_PUBLIC_` y no subas correos reales al repositorio.
+
+> ⚠️ **Configúrala en Vercel antes de deployar este código.** Si falta o está vacía se deniega el acceso a todos, y los administradores actuales quedan bloqueados. Después de cambiarla hay que redeployar.
+
 ### 4. Deploy
 
 1. Haz clic en **"Deploy"**
@@ -160,6 +171,10 @@ npm start
 ### Error: "Page [...not_found] missing generateStaticParams"
 - Ya resuelto: eliminamos el workflow de GitHub Pages
 - Usa Vercel u otra plataforma con soporte para SSR
+
+### Un administrador no puede entrar a Evaluación Docente
+- Verifica que su correo esté en `EVAL_ADMIN_EMAILS` en Vercel y que esté confirmado en Supabase Auth
+- Redeploya el proyecto después de cambiar la variable
 
 ### Formularios no envían emails
 - Verifica `RESEND_API_KEY` en Vercel dashboard

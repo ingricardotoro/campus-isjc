@@ -1,0 +1,167 @@
+// Scoped helpers for the public admissions form.
+
+// Keeps the trap off-screen for people while bots still see a normal input.
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.requiredNote {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+// Bootstrap floats legends and enlarges their font; the h2 inside sets the size.
+.legend,
+.fieldLegend {
+  float: none;
+  width: 100%;
+  padding: 0;
+}
+
+.legend {
+  margin-bottom: 4px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  margin-bottom: 0;
+}
+
+.sectionHint {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.fieldLegend {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--bd-black);
+  margin-bottom: 8px;
+}
+
+.fieldError {
+  color: #b42318;
+  font-size: 14px;
+  margin: 6px 0 0;
+}
+
+.errorSummary {
+  color: #b42318;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+// The theme title-cases every label, which reads badly in full sentences.
+.form label {
+  text-transform: none;
+}
+
+// Bootstrap selects inherit a very small font from the theme; match the inputs.
+.form .select {
+  min-height: 50px;
+  font-size: 16px;
+  padding-left: 13px;
+}
+
+// Radios keep the theme's drawn circle; the label gets a 44px tall tap area.
+.radioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+}
+
+.radioOption {
+  position: relative;
+
+  label {
+    display: inline-block;
+    padding-block: 10px;
+    font-size: 16px;
+  }
+
+  // The theme positions the circle from the label top; shift it by the padding.
+  input[type="radio"] ~ label::before {
+    top: 13px;
+  }
+
+  input[type="radio"] ~ label::after {
+    top: 17px;
+  }
+
+  input[type="radio"]:focus-visible ~ label::before {
+    outline: 2px solid var(--bd-primary);
+    outline-offset: 2px;
+  }
+}
+
+.privacyNotice {
+  background-color: #f6f7f9;
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.6;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.privacyTitle {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+// The theme hides every checkbox (display: none) and draws a box on the label,
+// which removes keyboard access. Keep the native input focusable and invisible
+// on top of the drawn box, and show a focus ring on the box.
+.checkboxField {
+  position: relative;
+
+  input[type="checkbox"] {
+    display: block;
+    position: absolute;
+    top: 2px;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  input[type="checkbox"]:focus-visible ~ label::after {
+    outline: 2px solid var(--bd-primary);
+    outline-offset: 2px;
+  }
+
+  label {
+    cursor: pointer;
+    line-height: 1.5;
+  }
+}
+
+.success {
+  border: 1px solid var(--bd-border-primary);
+  border-radius: 8px;
+  padding: 32px 24px;
+  text-align: center;
+
+  &:focus {
+    outline: none;
+  }
+
+  p {
+    margin-bottom: 16px;
+  }
+}
+
+.successTitle {
+  margin-bottom: 15px;
+}
