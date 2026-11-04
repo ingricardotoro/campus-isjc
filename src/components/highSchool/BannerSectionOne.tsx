@@ -50,7 +50,7 @@ const BannerSectionOne = () => {
                                             <path d="M1 7C28.2975 2.83975 94.8839 -1.83253 137 3.15976" stroke="#FFAF00"
                                                 strokeWidth="2" />
                                         </svg> 
-                                    </span><br /> 10mo a 12vo grado </h1>
+                                    </span><br /> 10mo y 11mo grado </h1>
                                     <p className="bd-banner-description">
                                         Formamos líderes con excelencia académica y valores cristianos, preparados para enfrentar los desafíos universitarios y profesionales en un entorno globalizado.
                                     </p>
