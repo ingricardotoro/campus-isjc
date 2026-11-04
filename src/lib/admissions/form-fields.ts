@@ -10,5 +10,8 @@ export const STARTED_AT_FIELD = "startedAt";
 /** Submissions faster than this are treated as automated. */
 export const MIN_FILL_TIME_MS = 3000;
 
+/** How far ahead of the server a device clock may run before it counts as forged. */
+export const MAX_CLOCK_SKEW_MS = 5 * 60 * 1000;
+
 /** Request bodies above this size are rejected before parsing. */
 export const MAX_BODY_BYTES = 10 * 1024;

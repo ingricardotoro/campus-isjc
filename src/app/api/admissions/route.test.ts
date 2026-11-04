@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
+import { MAX_CLOCK_SKEW_MS } from "@/lib/admissions/form-fields";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { POST } from "./route";
 
@@ -140,11 +141,55 @@ describe("POST /api/admissions", () => {
     expect(rpc).toHaveBeenCalledTimes(1);
   });
 
+  it("registers a family whose device clock is just inside the skew window", async () => {
+    rpcReturns(true);
+
+    const response = await post(validBody({ startedAt: Date.now() + MAX_CLOCK_SKEW_MS - 5_000 }));
+
+    expect(response.status).toBe(200);
+    expect(rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["just past the skew window", () => Date.now() + MAX_CLOCK_SKEW_MS + 5_000],
+    ["at the largest safe integer", () => Number.MAX_SAFE_INTEGER],
+  ])("silently filters a render timestamp %s", async (_label, startedAt) => {
+    const response = await post(validBody({ startedAt: startedAt() }));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true });
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
   it("silently accepts a submission without a render timestamp", async () => {
     const response = await post(validBody({ startedAt: undefined }));
 
     expect(response.status).toBe(200);
     expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["honeypot", () => ({ website: "https://spam.example" })],
+    ["invalid_timestamp", () => ({ startedAt: "not-a-number" })],
+    ["too_fast", () => ({ startedAt: Date.now() - 500 })],
+    ["future_timestamp", () => ({ startedAt: Number.MAX_SAFE_INTEGER })],
+  ])("logs the %s filter reason without personal data", async (reason, overrides) => {
+    await post(validBody(overrides()));
+
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith("[admissions] Submission filtered:", reason);
+    const logged = JSON.stringify(vi.mocked(console.warn).mock.calls);
+    for (const value of ["María", "maria@example.com", "9999-8888", "spam.example"]) {
+      expect(logged).not.toContain(value);
+    }
+  });
+
+  it("logs nothing for a submission that is not filtered", async () => {
+    rpcReturns(false);
+
+    await post(validBody());
+
+    expect(console.warn).not.toHaveBeenCalled();
   });
 
   it("rejects an invalid body with 400 and generic messages", async () => {

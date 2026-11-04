@@ -4,6 +4,7 @@ import { loadInterestLabels } from "@/lib/admissions/catalog";
 import {
   HONEYPOT_FIELD,
   MAX_BODY_BYTES,
+  MAX_CLOCK_SKEW_MS,
   MIN_FILL_TIME_MS,
   STARTED_AT_FIELD,
 } from "@/lib/admissions/form-fields";
@@ -60,19 +61,28 @@ async function readBodyWithLimit(request: NextRequest, limit: number): Promise<s
   return new TextDecoder().decode(bytes);
 }
 
-function looksAutomated(body: Record<string, unknown>): boolean {
+type FilterReason = "honeypot" | "invalid_timestamp" | "too_fast" | "future_timestamp";
+
+/** Returns why a submission looks automated, or null when it looks human. */
+function automationReason(body: Record<string, unknown>): FilterReason | null {
   const honeypot = body[HONEYPOT_FIELD];
-  if (typeof honeypot === "string" && honeypot.trim() !== "") return true;
-  if (honeypot !== undefined && honeypot !== null && typeof honeypot !== "string") return true;
+  if (typeof honeypot === "string" && honeypot.trim() !== "") return "honeypot";
+  if (honeypot !== undefined && honeypot !== null && typeof honeypot !== "string") {
+    return "honeypot";
+  }
 
   const startedAt = body[STARTED_AT_FIELD];
-  if (typeof startedAt !== "number" || !Number.isFinite(startedAt)) return true;
+  if (typeof startedAt !== "number" || !Number.isFinite(startedAt)) return "invalid_timestamp";
 
-  // The timestamp comes from the device clock. A negative value means that clock
-  // runs ahead of the server, not that the form was filled instantly: discarding
-  // it would lose a real family while showing them a success message.
+  // The timestamp comes from the device clock. A small negative value means that
+  // clock runs ahead of the server, not that the form was filled instantly:
+  // discarding it would lose a real family while showing them a success message.
+  // Beyond the skew window it is treated as forged, because an unbounded exemption
+  // would let any far-future value skip this filter.
   const elapsed = Date.now() - startedAt;
-  return elapsed >= 0 && elapsed < MIN_FILL_TIME_MS;
+  if (elapsed < -MAX_CLOCK_SKEW_MS) return "future_timestamp";
+  if (elapsed >= 0 && elapsed < MIN_FILL_TIME_MS) return "too_fast";
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -89,8 +99,14 @@ export async function POST(request: NextRequest) {
     return fail(400, INVALID_MESSAGE);
   }
 
-  // Bots get the same answer as people so they cannot tell they were filtered.
-  if (looksAutomated(body as Record<string, unknown>)) return ok();
+  // Bots get the same answer as people so they cannot tell they were filtered. A
+  // real family caught here would see success too, so the reason is logged to keep
+  // those losses visible. It never includes submitted values.
+  const filterReason = automationReason(body as Record<string, unknown>);
+  if (filterReason) {
+    console.warn("[admissions] Submission filtered:", filterReason);
+    return ok();
+  }
 
   const parsed = admissionsInterestSchema.safeParse(body);
   if (!parsed.success) {
