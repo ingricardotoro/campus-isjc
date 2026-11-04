@@ -10,8 +10,6 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Admisiones 2027",
   description: "Solicite información sobre el proceso de admisión del Instituto San José del Carmen.",
-  // Reachable by URL only until launch.
-  robots: { index: false, follow: false },
 };
 
 async function getCatalog(): Promise<AdmissionsCatalog | null> {

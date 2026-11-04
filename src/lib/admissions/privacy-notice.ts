@@ -1,8 +1,7 @@
-// PENDING INSTITUTIONAL APPROVAL: this privacy notice is a draft written for
-// Delivery 2. The institution must review and approve the text before launch.
+// Text approved by the institution on 2026-11-04.
 // Any change to the wording must bump PRIVACY_NOTICE_VERSION, because the
 // version is stored with each prospect's consent.
-export const PRIVACY_NOTICE_VERSION = "ADM-2027-v1-draft";
+export const PRIVACY_NOTICE_VERSION = "ADM-2027-v1";
 
 export const PRIVACY_NOTICE_TITLE = "Aviso de privacidad";
 

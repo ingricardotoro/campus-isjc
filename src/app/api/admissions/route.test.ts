@@ -92,7 +92,7 @@ describe("POST /api/admissions", () => {
         p_guardian_name: "María López",
         p_source_code: "WEB_FORM",
         p_consent_to_contact: true,
-        p_privacy_notice_version: "ADM-2027-v1-draft",
+        p_privacy_notice_version: "ADM-2027-v1",
         p_utm_source: "facebook",
       })
     );
