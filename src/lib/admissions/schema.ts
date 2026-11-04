@@ -46,6 +46,8 @@ const trackingField = z.preprocess(trackingValue, z.string().nullable());
 
 const catalogId = (message: string) => z.guid({ error: message });
 
+const CONTACT_FIELDS = new Set(["phone", "email", "preferredContactMethod"]);
+
 export const admissionsInterestSchema = z
   .object({
     guardianName: z.preprocess(
@@ -126,6 +128,11 @@ export const admissionsInterestSchema = z
         message: "Ingrese un teléfono para este medio de contacto.",
       });
     }
+  }, {
+    // Run even when unrelated fields failed, so the form shows every problem
+    // at once; skip only when the contact fields themselves are malformed.
+    when: (payload) =>
+      !payload.issues.some((issue) => CONTACT_FIELDS.has(String(issue.path?.[0] ?? ""))),
   });
 
 export type AdmissionsInterest = z.infer<typeof admissionsInterestSchema>;

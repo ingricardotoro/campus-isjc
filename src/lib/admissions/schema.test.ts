@@ -58,6 +58,12 @@ describe("admissionsInterestSchema", () => {
     );
   });
 
+  it("reports a missing contact together with other errors", () => {
+    const paths = issuePaths(validInput({ phone: "", email: "", consentToContact: false }));
+
+    expect(paths).toEqual(expect.arrayContaining(["phone", "consentToContact"]));
+  });
+
   it("rejects phones with fewer than 8 or more than 15 digits", () => {
     expect(issuePaths(validInput({ phone: "1234567" }))).toContain("phone");
     expect(issuePaths(validInput({ phone: "1234567890123456" }))).toContain("phone");
