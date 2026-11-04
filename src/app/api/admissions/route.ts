@@ -18,6 +18,10 @@ import { admissionsInterestSchema } from "@/lib/admissions/schema";
 
 const INVALID_MESSAGE =
   "Algunos datos no son válidos. Revise el formulario e intente nuevamente.";
+// The render timestamp is taken once per page load, so fixing the clock is not
+// enough: the family must also reload the page.
+const CLOCK_MESSAGE =
+  "La fecha y hora de su dispositivo parecen incorrectas. Corríjalas, recargue la página e intente nuevamente.";
 const TOO_LARGE_MESSAGE = "La solicitud es demasiado grande.";
 const UNEXPECTED_MESSAGE =
   "No pudimos registrar su solicitud en este momento. Intente nuevamente más tarde.";
@@ -105,6 +109,9 @@ export async function POST(request: NextRequest) {
   const filterReason = automationReason(body as Record<string, unknown>);
   if (filterReason) {
     console.warn("[admissions] Submission filtered:", filterReason);
+    // A wrong device clock is more likely a real family than a bot, so this one
+    // gets an honest error instead of a success that would lose their request.
+    if (filterReason === "future_timestamp") return fail(400, CLOCK_MESSAGE);
     return ok();
   }
 

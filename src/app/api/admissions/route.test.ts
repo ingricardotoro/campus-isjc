@@ -153,12 +153,16 @@ describe("POST /api/admissions", () => {
   it.each([
     ["just past the skew window", () => Date.now() + MAX_CLOCK_SKEW_MS + 5_000],
     ["at the largest safe integer", () => Number.MAX_SAFE_INTEGER],
-  ])("silently filters a render timestamp %s", async (_label, startedAt) => {
+  ])("asks the family to fix the device clock for a timestamp %s", async (_label, startedAt) => {
     const response = await post(validBody({ startedAt: startedAt() }));
 
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true });
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.ok).toBe(false);
+    expect(body.error).toMatch(/fecha y hora de su dispositivo/);
+    expect(body.error).toMatch(/recargue la página/);
     expect(rpc).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
   });
 
   it("silently accepts a submission without a render timestamp", async () => {
