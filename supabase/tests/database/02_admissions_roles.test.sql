@@ -158,7 +158,7 @@ select throws_ok(
      where id = '00000000-0000-4000-c000-000000000002' $$,
   '42501', null, 'agent cannot set the trigger-managed closed_at');
 select throws_ok(
-  $$ update public.admissions_prospects set grade_id = grade_id, modality_id = (select id from public.admissions_modalities where code = 'ESPANOL')
+  $$ update public.admissions_prospects set grade_id = (select id from public.admissions_grades where code = 'PRE_BASICA'), modality_id = (select id from public.admissions_modalities where code = 'ESPANOL')
      where id = '00000000-0000-4000-c000-000000000002' $$,
   '23503', null, 'a modality the grade does not offer is rejected on direct writes');
 

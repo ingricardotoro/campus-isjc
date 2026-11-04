@@ -199,7 +199,7 @@ select lives_ok(
   $$ select * from pg_temp.register('Modalidad', '99993333', null, 'Sept', 'GRADE_07', 'ESPANOL') $$,
   'a modality the grade offers is accepted');
 select throws_ok(
-  $$ select * from pg_temp.register('Modalidad', '99994444', null, 'Uno', 'GRADE_01', 'ESPANOL') $$,
+  $$ select * from pg_temp.register('Modalidad', '99994444', null, 'Pre', 'PRE_BASICA', 'ESPANOL') $$,
   '22023', null, 'a modality the grade does not offer is rejected');
 
 -- Invalid submissions are refused and leave nothing behind.
