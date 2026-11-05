@@ -154,6 +154,17 @@ export function quotedContains(term: string): string {
   return `"${`%${likePattern}%`.replace(/[\\"]/g, "\\$&")}"`;
 }
 
+/**
+ * Folds a name search term the way public.admissions_fold_name folds the stored names
+ * (migration 20261105000100): decomposed, combining marks removed, lower-cased. For
+ * Spanish that drops the acute accent and the dieresis and turns ñ into n, so "maria"
+ * finds "María". The database side uses unaccent, which also expands a few non-Spanish
+ * letters such as ß and æ that this leaves alone.
+ */
+export function foldSearchName(term: string): string {
+  return term.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
 /** Same characters the public form accepts in a phone number. */
 function phoneSearchDigits(term: string): string | null {
   if (!/^[0-9+()\-.\s]+$/.test(term)) return null;
@@ -165,11 +176,14 @@ function phoneSearchDigits(term: string): string | null {
  * Phones are searched by digits in phone_normalized, so "9999-8888" finds a number stored
  * as "+504 9999 8888". That column prefixes 8-digit numbers with 504, which a substring
  * match tolerates. Only terms that look like a phone number reach this column; otherwise
- * "ana 2" would match every phone holding a 2.
+ * "ana 2" would match every phone holding a 2. Names are searched without accents; the
+ * email is searched as typed.
  */
 export function buildGuardianSearchFilter(term: string): string {
-  const pattern = quotedContains(term);
-  const conditions = [`full_name.ilike.${pattern}`, `email_normalized.ilike.${pattern}`];
+  const conditions = [
+    `full_name_search.ilike.${quotedContains(foldSearchName(term))}`,
+    `email_normalized.ilike.${quotedContains(term)}`,
+  ];
   const digits = phoneSearchDigits(term);
   if (digits) conditions.push(`phone_normalized.ilike."%${digits}%"`);
   return conditions.join(",");
@@ -292,7 +306,7 @@ function filteredProspects(
   else if (params.assignedTo) query = query.eq("assigned_to", params.assignedTo);
 
   if (params.q) {
-    const conditions = [`student_name_normalized.ilike.${quotedContains(params.q)}`];
+    const conditions = [`student_name_search.ilike.${quotedContains(foldSearchName(params.q))}`];
     if (guardianIds.length > 0) conditions.push(`guardian_id.in.(${guardianIds.join(",")})`);
     query = query.or(conditions.join(","));
   }

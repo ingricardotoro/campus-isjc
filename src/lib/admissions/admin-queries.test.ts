@@ -5,6 +5,7 @@ import {
   AdmissionsQueryError,
   GUARDIAN_SEARCH_LIMIT,
   buildGuardianSearchFilter,
+  foldSearchName,
   getProspect,
   isValidProspectId,
   listProspects,
@@ -215,7 +216,7 @@ describe("search escaping", () => {
     const conditions = parseOrFilter(buildGuardianSearchFilter(term));
 
     expect(conditions.map((c) => c.column)).toEqual([
-      "full_name.ilike.",
+      "full_name_search.ilike.",
       "email_normalized.ilike.",
     ]);
     expect(conditions[0].value).toContain(term.replace(/[\\%_]/g, "\\$&"));
@@ -256,9 +257,43 @@ describe("buildGuardianSearchFilter", () => {
     const conditions = parseOrFilter(buildGuardianSearchFilter("ana@example.com"));
 
     expect(conditions).toEqual([
-      { column: "full_name.ilike.", value: "%ana@example.com%" },
+      { column: "full_name_search.ilike.", value: "%ana@example.com%" },
       { column: "email_normalized.ilike.", value: "%ana@example.com%" },
     ]);
+  });
+
+  it("searches the guardian name without accents, and the email as typed", () => {
+    const conditions = parseOrFilter(buildGuardianSearchFilter("josé"));
+
+    expect(conditions).toEqual([
+      { column: "full_name_search.ilike.", value: "%jose%" },
+      { column: "email_normalized.ilike.", value: "%josé%" },
+    ]);
+  });
+});
+
+describe("foldSearchName", () => {
+  // Must agree with public.admissions_fold_name in
+  // supabase/migrations/20261105000100_add_admissions_accent_insensitive_search.sql,
+  // whose pgTAP test checks the same pairs.
+  it.each([
+    ["á é í ó ú ü ñ", "a e i o u u n"],
+    ["Á É Í Ó Ú Ü Ñ", "a e i o u u n"],
+    ["María", "maria"],
+    ["JOSÉ", "jose"],
+    ["Güell Muñoz", "guell munoz"],
+    ["peña", "pena"],
+  ])("folds %s to %s", (term, folded) => {
+    expect(foldSearchName(term)).toBe(folded);
+  });
+
+  it("leaves wildcards and quotes for quotedContains to escape", () => {
+    expect(foldSearchName('50%_a*"\\')).toBe('50%_a*"\\');
+  });
+
+  it("folds characters written precomposed or already decomposed alike", () => {
+    expect(foldSearchName("María")).toBe("maria");
+    expect(foldSearchName("María")).toBe("maria");
   });
 });
 
@@ -405,10 +440,10 @@ describe("listProspects", () => {
 
     expect(calls.map((c) => c.table)).toEqual(["admissions_guardians", "admissions_prospects"]);
     expect(opsNamed(calls[0], "or")).toEqual([
-      ["or", 'full_name.ilike."%ana%",email_normalized.ilike."%ana%"'],
+      ["or", 'full_name_search.ilike."%ana%",email_normalized.ilike."%ana%"'],
     ]);
     expect(opsNamed(prospectCall(calls), "or")).toEqual([
-      ["or", `student_name_normalized.ilike."%ana%",guardian_id.in.(${ID_A},${ID_B})`],
+      ["or", `student_name_search.ilike."%ana%",guardian_id.in.(${ID_A},${ID_B})`],
     ]);
   });
 
@@ -418,7 +453,7 @@ describe("listProspects", () => {
     await listProspects(client, paramsFrom("q=ana"));
 
     expect(opsNamed(prospectCall(calls), "or")).toEqual([
-      ["or", 'student_name_normalized.ilike."%ana%"'],
+      ["or", 'student_name_search.ilike."%ana%"'],
     ]);
   });
 
@@ -429,7 +464,20 @@ describe("listProspects", () => {
 
     const [[, filter]] = opsNamed(prospectCall(calls), "or");
     expect(parseOrFilter(filter as string)).toEqual([
-      { column: "student_name_normalized.ilike.", value: String.raw`%a\%",id.not.is.null%` },
+      { column: "student_name_search.ilike.", value: String.raw`%a\%",id.not.is.null%` },
+    ]);
+  });
+
+  it("searches names without accents or case, so María is found by maria and jose by JOSÉ", async () => {
+    const { client, calls } = fakeClient(guardians([{ id: ID_A }]));
+
+    await listProspects(client, paramsFrom("q=" + encodeURIComponent("JOSÉ María")));
+
+    expect(opsNamed(calls[0], "or")).toEqual([
+      ["or", 'full_name_search.ilike."%jose maria%",email_normalized.ilike."%josé maría%"'],
+    ]);
+    expect(opsNamed(prospectCall(calls), "or")).toEqual([
+      ["or", `student_name_search.ilike."%jose maria%",guardian_id.in.(${ID_A})`],
     ]);
   });
 
