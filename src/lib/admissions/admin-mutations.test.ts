@@ -565,6 +565,22 @@ describe("patchGuardian", () => {
     expect(response.status).toBe(404);
   });
 
+  it("answers a generic 500 when the read after an unmatched update fails", async () => {
+    const { client, queries } = fakeClient([
+      { data: currentGuardian() },
+      noRow,
+      { error: { code: "XX000", message: SECRET } },
+    ]);
+
+    const response = await patchGuardian(client, ID, jsonRequest({ phone: "9999-1111" }));
+
+    expect(response.status).toBe(500);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(JSON.stringify(await response.json())).not.toContain(SECRET);
+    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain(SECRET);
+    expect(queries).toHaveLength(3);
+  });
+
   it("answers a generic 409 on a unique conflict, without data of another family", async () => {
     const { client } = fakeClient([
       { data: currentGuardian() },

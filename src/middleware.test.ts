@@ -304,6 +304,49 @@ describe("middleware, admissions admin", () => {
       }
     );
 
+    describe("logout API", () => {
+      const LOGOUT_API = "/api/admisiones-admin/logout";
+      const logoutRequest = () => new NextRequest(`${ORIGIN}${LOGOUT_API}`, { method: "POST" });
+
+      it.each([
+        ["no session", null, { data: null, error: null }],
+        ["no role", STAFF, { data: null, error: null }],
+        ["a failed role lookup", STAFF, { data: null, error: { code: "PGRST301" } }],
+      ])("lets a caller with %s through, without a role lookup", async (_label, user, rpcResult) => {
+        const { rpc } = admissionsSessionWith(user);
+        rpc.mockResolvedValue(rpcResult);
+
+        const result = await middleware(logoutRequest());
+
+        expect(result.status).toBe(200);
+        expect(result.headers.get("x-middleware-next")).toBe("1");
+        expect(result.headers.get("location")).toBeNull();
+        expect(rpc).not.toHaveBeenCalled();
+        expect(updateSession).not.toHaveBeenCalled();
+      });
+
+      it.each([
+        ["a path below it", "/api/admisiones-admin/logout/otra", 401],
+        ["a longer sibling", "/api/admisiones-admin/logout-todo", 401],
+        ["the page path of the same name", "/admisiones-admin/logout", 307],
+      ])("still gates %s", async (_label, pathname, status) => {
+        admissionsSessionWith(null);
+
+        const result = await middleware(requestTo(pathname));
+
+        expect(updateSession).toHaveBeenCalledTimes(1);
+        expect(result.status).toBe(status);
+      });
+
+      it("still denies a user without a role on the routes next to it", async () => {
+        admissionsSessionWith(STAFF, null);
+
+        const result = await middleware(requestTo(ADMISSIONS_API));
+
+        expect(result.status).toBe(403);
+      });
+    });
+
     it.each(["/admisiones-admin/login/otra", "/api/admisiones-admin/login/otra"])(
       "does not exempt %s, which is below the login path",
       async (pathname) => {

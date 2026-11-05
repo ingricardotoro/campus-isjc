@@ -38,7 +38,11 @@ export async function middleware(request: NextRequest) {
   if (isAdmissionsApi || isWithin(pathname, ADMISSIONS_ADMIN_PAGES)) {
     const isLogin =
       pathname === `${ADMISSIONS_ADMIN_PAGES}/login` || pathname === `${ADMISSIONS_ADMIN_API}/login`;
-    return isLogin ? NextResponse.next() : guardAdmissionsAdmin(request, isAdmissionsApi);
+    // A user whose role was revoked, or whose lookup failed, must still be able to end the session.
+    const isLogout = pathname === `${ADMISSIONS_ADMIN_API}/logout`;
+    return isLogin || isLogout
+      ? NextResponse.next()
+      : guardAdmissionsAdmin(request, isAdmissionsApi);
   }
 
   const isAdminLogin =

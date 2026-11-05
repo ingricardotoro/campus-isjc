@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   canDelete,
   canEdit,
+  lookupAdmissionsRole,
   requireAdmissionsAccess,
   resolveAdmissionsRole,
   type AdmissionsRole,
@@ -48,6 +49,42 @@ describe("admissions admin access", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  describe("lookupAdmissionsRole", () => {
+    it.each(ROLES)("reports the role %s", async (role) => {
+      roleIs(role);
+
+      await expect(lookupAdmissionsRole(client())).resolves.toEqual({ status: "role", role });
+    });
+
+    it.each([
+      ["NULL", null],
+      ["an unknown value", "superuser"],
+      ["an inherited property name", "constructor"],
+    ])("reports no role for %s, without logging", async (_label, data) => {
+      roleIs(data);
+
+      await expect(lookupAdmissionsRole(client())).resolves.toEqual({ status: "none" });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("reports a failure on an RPC error, even when data is present", async () => {
+      rpc.mockResolvedValue({ data: "admin", error: { code: "PGRST301", message: USER.email } });
+
+      await expect(lookupAdmissionsRole(client())).resolves.toEqual({ status: "failed" });
+
+      const logged = JSON.stringify(vi.mocked(console.error).mock.calls);
+      expect(logged).toContain("PGRST301");
+      expect(logged).not.toContain(USER.email);
+    });
+
+    it("reports a failure when the call rejects", async () => {
+      rpc.mockRejectedValue(new Error(USER.email));
+
+      await expect(lookupAdmissionsRole(client())).resolves.toEqual({ status: "failed" });
+      expect(JSON.stringify(vi.mocked(console.error).mock.calls.flat())).not.toContain(USER.email);
+    });
   });
 
   describe("resolveAdmissionsRole", () => {

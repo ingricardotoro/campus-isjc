@@ -12,6 +12,11 @@ const ADMISSIONS_ROLES = [
 
 export type AdmissionsRole = (typeof ADMISSIONS_ROLES)[number];
 
+export type AdmissionsRoleLookup =
+  | { status: "role"; role: AdmissionsRole }
+  | { status: "none" }
+  | { status: "failed" };
+
 export type AdmissionsAccess = {
   supabase: SupabaseClient;
   user: User;
@@ -23,25 +28,34 @@ function isAdmissionsRole(value: unknown): value is AdmissionsRole {
 }
 
 /**
- * Resolves the role of the user bound to the given session client.
+ * Looks up the role of the user bound to the given session client, keeping an outage
+ * apart from a real absence of a role so that a caller can tell the user to retry.
  *
- * Fails closed: an RPC error, NULL, or an unknown value all mean no access (null).
+ * NULL or an unknown value mean no role. An RPC error is a failure, even next to data.
  * Only the error code is logged, because Supabase messages can carry personal data.
  */
-export async function resolveAdmissionsRole(
+export async function lookupAdmissionsRole(
   supabase: Pick<SupabaseClient, "rpc">
-): Promise<AdmissionsRole | null> {
+): Promise<AdmissionsRoleLookup> {
   try {
     const { data, error } = await supabase.rpc("admissions_current_role");
     if (error) {
       console.error("[admissions] Role lookup failed:", error.code ?? "unknown");
-      return null;
+      return { status: "failed" };
     }
-    return isAdmissionsRole(data) ? data : null;
+    return isAdmissionsRole(data) ? { status: "role", role: data } : { status: "none" };
   } catch {
     console.error("[admissions] Role lookup failed:", "exception");
-    return null;
+    return { status: "failed" };
   }
+}
+
+/** Fails closed: anything other than a role, including a failed lookup, means no access (null). */
+export async function resolveAdmissionsRole(
+  supabase: Pick<SupabaseClient, "rpc">
+): Promise<AdmissionsRole | null> {
+  const lookup = await lookupAdmissionsRole(supabase);
+  return lookup.status === "role" ? lookup.role : null;
 }
 
 export function canEdit(role: AdmissionsRole | null): boolean {
