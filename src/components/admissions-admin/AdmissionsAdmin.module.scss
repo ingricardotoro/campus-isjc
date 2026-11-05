@@ -361,6 +361,9 @@ $error-color: #b42318;
 }
 
 .dialog {
+  // The theme resets every margin to 0, which removes the browser's
+  // `margin: auto` centering for modal dialogs.
+  margin: auto;
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
   padding: 24px;
