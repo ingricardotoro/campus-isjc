@@ -146,10 +146,39 @@ $error-color: #b42318;
   gap: 8px;
 
   :global(.page-link) {
+    // The theme sets the root font to 10px, so Bootstrap's 1rem would render at 10px.
+    font-size: 16px;
     min-width: 44px;
     min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
+}
+
+// Page title band. White on --bd-primary (#002147) is well above 4.5:1.
+// From 992px the theme pulls the dashboard area up by 65px, so the band reserves that space.
+.pageHeader {
+  border-radius: 12px;
+  padding: 32px 30px;
+
+  @media (min-width: 992px) {
+    padding-bottom: 97px;
+  }
+
+  @media (max-width: 575px) {
+    padding: 24px 20px;
+  }
+}
+
+.pageTitle {
+  font-size: 28px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.pageDescription {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  margin: 6px 0 0;
 }

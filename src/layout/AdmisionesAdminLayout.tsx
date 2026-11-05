@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import styles from "@/components/admissions-admin/AdmissionsAdmin.module.scss";
 import AdmisionesAdminSidebarMenu from "./sidebar/AdmisionesAdminSidebarMenu";
 
 interface AdmisionesAdminLayoutProps {
@@ -19,13 +20,11 @@ const AdmisionesAdminLayout = ({ title, description, children }: AdmisionesAdmin
         <div className="container custom-container">
           <div className="row">
             <div className="col-xl-12">
-              <div className="bd-dashboard-breadcrumb-wrapper p-relative">
-                <div className="bd-dashboard-profile">
-                  <div className="content">
-                    <h1 className="name h3 mb-0">{title}</h1>
-                    {description && <span className="designation d-block">{description}</span>}
-                  </div>
-                </div>
+              {/* In normal flow, unlike the theme's absolutely placed profile, which needs a
+                  360px cover image behind it. The dashboard card overlaps the band's bottom. */}
+              <div className={`bd-dashboard-breadcrumb-wrapper theme-bg ${styles.pageHeader}`}>
+                <h1 className={`h3 mb-0 text-white ${styles.pageTitle}`}>{title}</h1>
+                {description && <p className={styles.pageDescription}>{description}</p>}
               </div>
             </div>
           </div>
