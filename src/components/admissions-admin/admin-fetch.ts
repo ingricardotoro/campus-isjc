@@ -46,3 +46,33 @@ export async function fetchAdminJson<T>(
   }
   return { kind: "ok", data: body as T };
 }
+
+export type AdminRequestResult =
+  | { kind: "response"; status: number; body: unknown }
+  | { kind: "network" }
+  | { kind: "aborted" };
+
+/**
+ * Lower-level fetch for pages that must tell answers apart by status, such as a 404 or
+ * the field errors of a 400. The body is undefined when it is not JSON.
+ */
+export async function requestAdmin(
+  url: string,
+  { json, ...init }: RequestInit & { json?: unknown } = {}
+): Promise<AdminRequestResult> {
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...init,
+      cache: "no-store",
+      ...(json !== undefined && {
+        body: JSON.stringify(json),
+        headers: { "Content-Type": "application/json" },
+      }),
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") return { kind: "aborted" };
+    return { kind: "network" };
+  }
+  return { kind: "response", status: response.status, body: await readJson(response) };
+}

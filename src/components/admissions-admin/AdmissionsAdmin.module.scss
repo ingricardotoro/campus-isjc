@@ -182,3 +182,202 @@ $error-color: #b42318;
   font-size: 16px;
   margin: 6px 0 0;
 }
+
+// ---------------------------------------------------------------------------
+// Prospect record
+// ---------------------------------------------------------------------------
+
+.backLink,
+.dangerButton,
+.errorSummary a {
+  &:focus-visible {
+    outline: 3px solid var(--bd-primary);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+}
+
+.recordHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+
+  h2 {
+    overflow-wrap: anywhere;
+  }
+}
+
+.readOnlyNote {
+  font-size: 14px;
+  color: #555;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+
+  .sectionTitle {
+    margin-bottom: 0;
+  }
+}
+
+.subsectionTitle {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.savedNote {
+  color: #146c43;
+  font-weight: 500;
+  margin: 8px 0 0;
+  min-height: 1.5em;
+}
+
+.detailList {
+  margin-top: 8px;
+  margin-bottom: 0;
+  row-gap: 12px;
+
+  dt {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  dd {
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.emptyValue {
+  color: #555;
+  font-style: italic;
+}
+
+.preWrap {
+  white-space: pre-wrap;
+}
+
+.contactActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.plainFieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.unsavedNote {
+  font-size: 14px;
+  font-weight: 500;
+  color: #8a5300;
+}
+
+.fieldError {
+  color: $error-color;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 6px 0 0;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.errorSummary {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-left: 4px solid $error-color;
+  background: #fef3f2;
+  color: $error-color;
+  font-weight: 500;
+
+  a {
+    color: $error-color;
+    text-decoration: underline;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $error-color;
+    outline-offset: 2px;
+  }
+}
+
+// White on #b42318 is about 6.5:1.
+.dangerZone {
+  padding: 20px 24px;
+  border: 1px solid $error-color;
+  border-radius: 6px;
+
+  .sectionTitle {
+    color: $error-color;
+  }
+}
+
+.dangerButton {
+  background-color: $error-color;
+  border: 1px solid $error-color;
+  color: #fff;
+  min-height: 44px;
+
+  &:hover:not(:disabled) {
+    background-color: #912018;
+    border-color: #912018;
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 24px;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  ul {
+    padding-left: 20px;
+  }
+}
+
+.dialogTitle {
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+}

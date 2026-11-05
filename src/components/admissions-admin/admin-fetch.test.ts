@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DEFAULT_LOAD_ERROR, fetchAdminJson } from "./admin-fetch";
+import { DEFAULT_LOAD_ERROR, fetchAdminJson, requestAdmin } from "./admin-fetch";
 
 function respondWith(status: number, body: unknown) {
   const text = typeof body === "string" ? body : JSON.stringify(body);
@@ -73,5 +73,57 @@ describe("fetchAdminJson", () => {
       })
     );
     await expect(fetchAdminJson("/api/x")).resolves.toEqual({ kind: "aborted" });
+  });
+});
+
+describe("requestAdmin", () => {
+  it("returns the status and the JSON body, asking for a fresh copy", async () => {
+    respondWith(404, { error: "Prospecto no encontrado." });
+    await expect(requestAdmin("/api/x")).resolves.toEqual({
+      kind: "response",
+      status: 404,
+      body: { error: "Prospecto no encontrado." },
+    });
+    expect(fetch).toHaveBeenCalledWith("/api/x", expect.objectContaining({ cache: "no-store" }));
+  });
+
+  it("sends a JSON body with its content type", async () => {
+    respondWith(200, { ok: true });
+    await requestAdmin("/api/x", { method: "PATCH", json: { statusId: "s" } });
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/x",
+      expect.objectContaining({
+        method: "PATCH",
+        body: JSON.stringify({ statusId: "s" }),
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+  });
+
+  it("leaves the body undefined when it is not JSON", async () => {
+    respondWith(502, "<html>Bad gateway</html>");
+    await expect(requestAdmin("/api/x")).resolves.toEqual({
+      kind: "response",
+      status: 502,
+      body: undefined,
+    });
+  });
+
+  it("reports network failures and aborts apart from answers", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("Failed to fetch");
+      })
+    );
+    await expect(requestAdmin("/api/x")).resolves.toEqual({ kind: "network" });
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new DOMException("The operation was aborted.", "AbortError");
+      })
+    );
+    await expect(requestAdmin("/api/x")).resolves.toEqual({ kind: "aborted" });
   });
 });

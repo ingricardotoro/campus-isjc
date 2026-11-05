@@ -17,11 +17,12 @@ import {
   readListFilters,
   updateFilters,
 } from "@/lib/admissions/admin-list-params";
+import { recordHref } from "@/lib/admissions/admin-record";
 import { fetchAdminJson } from "./admin-fetch";
 import { EmptyState, ErrorState, LoadingState, NoAccessState } from "./AdminStates";
 import styles from "./AdmissionsAdmin.module.scss";
 import { syncSearchFromUrl } from "./search-sync";
-import { ADMIN_HOME_PATH, ADMIN_LOGIN_PATH } from "./useAdmissionsLogout";
+import { ADMIN_LOGIN_PATH } from "./useAdmissionsLogout";
 
 const SEARCH_DEBOUNCE_MS = 400;
 
@@ -326,7 +327,7 @@ const ProspectListMain = () => {
           <time dateTime={row.createdAt}>{dateFormatter.format(new Date(row.createdAt))}</time>
         </td>
         <th scope="row" className={styles.rowHeader}>
-          <Link href={`${ADMIN_HOME_PATH}/solicitudes/${row.id}`} className={styles.rowLink}>
+          <Link href={recordHref(row.id, queryString)} className={styles.rowLink}>
             {row.studentName || "Sin nombre"}
           </Link>
         </th>
