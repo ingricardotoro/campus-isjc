@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AdmissionsAdminCatalogs, ProspectList } from "@/lib/admissions/admin-queries";
 import {
   LIST_PAGE_SIZE,
@@ -20,6 +20,7 @@ import {
 import { fetchAdminJson } from "./admin-fetch";
 import { EmptyState, ErrorState, LoadingState, NoAccessState } from "./AdminStates";
 import styles from "./AdmissionsAdmin.module.scss";
+import { syncSearchFromUrl } from "./search-sync";
 import { ADMIN_HOME_PATH, ADMIN_LOGIN_PATH } from "./useAdmissionsLogout";
 
 const SEARCH_DEBOUNCE_MS = 400;
@@ -207,7 +208,16 @@ const ProspectListMain = () => {
   const [forbidden, setForbidden] = useState(false);
   const [listReloadKey, setListReloadKey] = useState(0);
   const [catalogReloadKey, setCatalogReloadKey] = useState(0);
-  const [searchText, setSearchText] = useState(filters.q ?? "");
+  const [searchText, setSearchTextState] = useState(filters.q ?? "");
+  // Mirrors searchText for the URL sync effect, which must not depend on every keystroke.
+  const searchTextRef = useRef(searchText);
+  // Search terms sent to the URL that have not landed yet, oldest first.
+  const pendingSearchRef = useRef<string[]>([]);
+
+  const setSearchText = useCallback((text: string) => {
+    searchTextRef.current = text;
+    setSearchTextState(text);
+  }, []);
 
   const navigate = useCallback(
     (next: ListFilters, mode: "push" | "replace" = "push") => {
@@ -217,6 +227,14 @@ const ProspectListMain = () => {
   );
 
   const applyFilter = (patch: FilterPatch) => navigate(updateFilters(filters, patch));
+
+  const navigateToSearch = useCallback(
+    (term: string, mode: "push" | "replace") => {
+      pendingSearchRef.current = [...pendingSearchRef.current, term];
+      navigate(updateFilters(filters, { q: term }), mode);
+    },
+    [filters, navigate]
+  );
 
   // Prospects.
   useEffect(() => {
@@ -254,31 +272,34 @@ const ProspectListMain = () => {
     return () => controller.abort();
   }, [catalogReloadKey, router]);
 
-  // Back, forward, and links change the URL: the search box follows, unless it already
-  // holds the same term with different spacing while the user is typing.
+  // Back, forward, and links change the URL: the search box follows. A search this list sent
+  // itself can land after the user typed more, and then the box keeps the newer typing.
   useEffect(() => {
-    const urlTerm = filters.q ?? "";
-    setSearchText((current) => (normalizeSearch(current) === urlTerm ? current : urlTerm));
-  }, [filters.q]);
+    const next = syncSearchFromUrl({
+      urlTerm: filters.q ?? "",
+      inputText: searchTextRef.current,
+      pending: pendingSearchRef.current,
+    });
+    pendingSearchRef.current = next.pending;
+    if (next.inputText !== searchTextRef.current) setSearchText(next.inputText);
+  }, [filters.q, setSearchText]);
 
   // Debounced search. Replace, so each keystroke does not add a history entry.
   useEffect(() => {
     const term = normalizeSearch(searchText);
     if (term === (filters.q ?? "")) return;
-    const timer = setTimeout(
-      () => navigate(updateFilters(filters, { q: term }), "replace"),
-      SEARCH_DEBOUNCE_MS
-    );
+    const timer = setTimeout(() => navigateToSearch(term, "replace"), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [searchText, filters, navigate]);
+  }, [searchText, filters.q, navigateToSearch]);
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const term = normalizeSearch(searchText);
-    if (term !== (filters.q ?? "")) navigate(updateFilters(filters, { q: term }));
+    if (term !== (filters.q ?? "")) navigateToSearch(term, "push");
   };
 
   const clearFilters = () => {
+    pendingSearchRef.current = [];
     setSearchText("");
     navigate({ page: 1, sort: filters.sort, dir: filters.dir });
   };
