@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmissionsAccess } from "@/lib/admissions/admin-access";
+import { canDelete, canEdit, requireAdmissionsAccess } from "@/lib/admissions/admin-access";
+import {
+  deleteProspect,
+  forbiddenResponse,
+  patchProspect,
+} from "@/lib/admissions/admin-mutations";
 import {
   getProspect,
   isValidProspectId,
@@ -28,4 +33,28 @@ export async function GET(
   } catch (error) {
     return queryFailureResponse(error);
   }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const access = await requireAdmissionsAccess();
+  if (access instanceof NextResponse) return access;
+  if (!canEdit(access.role)) return forbiddenResponse();
+
+  const { id } = await params;
+  return patchProspect(access.supabase, id, request);
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const access = await requireAdmissionsAccess();
+  if (access instanceof NextResponse) return access;
+  if (!canDelete(access.role)) return forbiddenResponse();
+
+  const { id } = await params;
+  return deleteProspect(access.supabase, id);
 }

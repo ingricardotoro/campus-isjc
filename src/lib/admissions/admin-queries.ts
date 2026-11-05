@@ -14,10 +14,11 @@ const PHONE_SEARCH_MIN_DIGITS = 3;
 const NEW_PROSPECT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 /**
- * Guardian ids travel in the request URL, at about 37 characters each, so they are capped
- * to keep the URL within common proxy limits. `searchTruncated` reports when the cap was hit.
+ * Guardian ids travel in the request URL, at about 39 characters each once encoded, so 100 of
+ * them take about 4 KB. 200 would take about 8 KB, and with the select list and the other
+ * filters could exceed common 8 KB proxy limits. `searchTruncated` reports when the cap was hit.
  */
-export const GUARDIAN_SEARCH_LIMIT = 200;
+export const GUARDIAN_SEARCH_LIMIT = 100;
 
 /** PostgREST answers 416 with this code when the offset is past the last row. */
 const RANGE_NOT_SATISFIABLE = "PGRST103";

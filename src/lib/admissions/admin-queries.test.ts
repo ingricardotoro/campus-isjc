@@ -447,6 +447,19 @@ describe("listProspects", () => {
     expect((filter as string).split(",")).toHaveLength(GUARDIAN_SEARCH_LIMIT + 1);
   });
 
+  it("keeps the guardian ids well inside an 8 KB URL, once encoded", async () => {
+    expect(GUARDIAN_SEARCH_LIMIT).toBe(100);
+    const uuids = Array.from({ length: GUARDIAN_SEARCH_LIMIT + 1 }, () => ({
+      id: "11111111-1111-4111-8111-111111111111",
+    }));
+    const { client, calls } = fakeClient(guardians(uuids));
+
+    await listProspects(client, paramsFrom("q=ana"));
+
+    const [[, filter]] = opsNamed(prospectCall(calls), "or");
+    expect(encodeURIComponent(filter as string).length).toBeLessThan(4500);
+  });
+
   it("does not report truncation at exactly the limit", async () => {
     const exact = Array.from({ length: GUARDIAN_SEARCH_LIMIT }, (_, index) => ({ id: `id-${index}` }));
     const { client } = fakeClient(guardians(exact));
