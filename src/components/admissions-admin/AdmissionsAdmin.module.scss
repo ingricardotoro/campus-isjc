@@ -1,0 +1,155 @@
+// Scoped helpers for the admissions admin panel. The look comes from the site theme
+// (bd-dashboard-*, bd-btn, Bootstrap); these rules only fill accessibility gaps.
+
+$error-color: #b42318;
+
+// Keyboard focus must be visible on every control in the panel.
+.countCard,
+.rowLink,
+.pagination :global(.page-link),
+.filterControl {
+  &:focus-visible {
+    outline: 3px solid var(--bd-primary);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+// The theme title-cases every label, which reads badly in full sentences.
+.form label,
+.filterLabel {
+  text-transform: none;
+}
+
+.formError {
+  color: $error-color;
+  font-weight: 500;
+  margin-bottom: 16px;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $error-color;
+    outline-offset: 4px;
+  }
+}
+
+.stateBox {
+  margin-top: 20px;
+  padding: 24px;
+  border: 1px solid var(--bd-border-primary);
+  border-radius: 6px;
+}
+
+.errorBox {
+  border-color: $error-color;
+
+  p {
+    color: $error-color;
+  }
+}
+
+.sectionTitle {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.plainList {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+// The whole card is the link, so the tap area is large on touch screens.
+.countCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  margin-bottom: 0;
+  color: var(--bd-black);
+  text-decoration: none;
+  transition: background-color 0.2s ease-out;
+
+  &:hover {
+    background-color: #ececec;
+    color: var(--bd-black);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.countLabel {
+  font-weight: 500;
+}
+
+.countValue {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--bd-primary);
+}
+
+.countHint {
+  font-size: 14px;
+  color: #555;
+}
+
+.filters {
+  padding-bottom: 4px;
+}
+
+// Bootstrap controls are 38px tall; 44px keeps them easy to tap.
+.filterControl {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+.filterHint {
+  font-size: 14px;
+  color: #555;
+  margin: 6px 0 0;
+}
+
+.notice {
+  padding: 12px 16px;
+  border-left: 4px solid var(--bd-primary);
+  background: #f7f7f7;
+}
+
+.summary {
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5em;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.rowHeader {
+  font-weight: 500;
+}
+
+.rowLink {
+  display: inline-block;
+  min-height: 44px;
+  padding: 10px 0;
+  text-decoration: underline;
+}
+
+.pagination {
+  gap: 8px;
+
+  :global(.page-link) {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
