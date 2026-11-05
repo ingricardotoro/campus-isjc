@@ -162,6 +162,53 @@ npm start
 
 ---
 
+## 🎓 Panel de Admisiones (`/admisiones-admin`)
+
+El panel usa la sesión de Supabase Auth del usuario y los permisos por rol de la base de datos (RLS). No usa la llave de servicio.
+
+### Migraciones
+
+Las migraciones de `supabase/migrations/` se aplican a producción con `psql` como `postgres`, en una sola transacción, usando la URL del *Session pooler*. No uses `supabase db push`: producción no tiene historial de migraciones de la CLI.
+
+- `20261104000200_add_admissions_prospect_deletion_and_assignee_guard.sql`: borrado de solicitudes (solo `admin`) y validación del responsable.
+- `20261105000100_add_admissions_accent_insensitive_search.sql`: búsqueda sin acentos. Instala `unaccent` en el esquema `extensions`.
+
+### Roles
+
+| Rol | Ver | Editar y asignar | Borrar |
+|---|---|---|---|
+| `admin` | ✅ | ✅ | ✅ |
+| `admissions_manager` | ✅ | ✅ | ❌ |
+| `admissions_agent` | ✅ | ✅ | ❌ |
+| `admissions_viewer` | ✅ | ❌ | ❌ |
+
+### Dar acceso a una persona
+
+1. En Supabase: **Authentication → Users → Add user → Create new user**, con su correo, una contraseña temporal y **Auto Confirm User** activado. Si la persona ya tiene cuenta (por ejemplo, en Evaluación Docente), omite este paso: usará la misma contraseña.
+2. En el **SQL Editor**, crea su perfil:
+   ```sql
+   insert into public.admissions_profiles (id, full_name, role, is_active)
+   select id, 'Nombre Apellido', 'admissions_agent', true
+   from auth.users
+   where lower(email) = lower('correo@ejemplo.com');
+   ```
+   Debe responder `INSERT 0 1`. Si responde `INSERT 0 0`, el correo no existe en Auth.
+3. La persona entra en `/admisiones-admin/login`.
+
+Para **quitar el acceso**, desactiva el perfil (no lo borres, porque puede tener solicitudes asignadas):
+```sql
+update public.admissions_profiles set is_active = false
+where id = (select id from auth.users where lower(email) = lower('correo@ejemplo.com'));
+```
+
+No subas correos reales al repositorio.
+
+### Solicitudes de eliminación de datos
+
+El aviso de privacidad permite a las familias pedir que se eliminen sus datos. Un `admin` lo hace desde la ficha de la solicitud con **Eliminar solicitud**. Si el encargado tiene otras solicitudes, borra cada una.
+
+---
+
 ## 🐛 Troubleshooting
 
 ### Error: "Missing API key"
@@ -175,6 +222,11 @@ npm start
 ### Un administrador no puede entrar a Evaluación Docente
 - Verifica que su correo esté en `EVAL_ADMIN_EMAILS` en Vercel y que esté confirmado en Supabase Auth
 - Redeploya el proyecto después de cambiar la variable
+
+### Una persona no puede entrar al Panel de Admisiones
+- "Credenciales inválidas": revisa el correo y la contraseña en Supabase Auth
+- "Esta cuenta no tiene acceso a este módulo": falta su fila en `admissions_profiles`, o tiene `is_active = false`
+- "El servicio no está disponible": Supabase no respondió; intenta de nuevo y revisa los logs de Vercel
 
 ### Formularios no envían emails
 - Verifica `RESEND_API_KEY` en Vercel dashboard
