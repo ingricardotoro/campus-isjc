@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import { middleware } from "./middleware";
+import { config, middleware } from "./middleware";
 
 vi.mock("@/lib/supabase/middleware", () => ({
   updateSession: vi.fn(),
@@ -23,6 +23,13 @@ function sessionWith(user: typeof ADMIN | null) {
   const response = NextResponse.next();
   vi.mocked(updateSession).mockResolvedValue({ response, user } as never);
   return response;
+}
+
+function admissionsSessionWith(user: typeof ADMIN | null, role: string | null = null) {
+  const response = NextResponse.next();
+  const rpc = vi.fn().mockResolvedValue({ data: role, error: null });
+  vi.mocked(updateSession).mockResolvedValue({ response, user, supabase: { rpc } } as never);
+  return { response, rpc };
 }
 
 describe("middleware", () => {
@@ -146,5 +153,234 @@ describe("middleware", () => {
     const result = await middleware(requestTo(ADMIN_API));
 
     expect(result.status).toBe(403);
+  });
+
+  it("does not look up an admissions role on evaluation paths", async () => {
+    const rpc = admissionsSessionWith(ADMIN, "admin").rpc;
+
+    await middleware(requestTo(ADMIN_PAGE));
+    await middleware(requestTo(ADMIN_API));
+
+    expect(updateSession).toHaveBeenCalledTimes(2);
+    expect(rpc).not.toHaveBeenCalled();
+  });
+});
+
+describe("middleware, admissions admin", () => {
+  const ADMISSIONS_LOGIN_URL = `${ORIGIN}/admisiones-admin/login`;
+  const ADMISSIONS_PAGE = "/admisiones-admin/prospectos";
+  const ADMISSIONS_API = "/api/admisiones-admin/prospectos";
+  const STAFF = { email: "persona@example.com", email_confirmed_at: "2026-01-01T00:00:00Z" };
+
+  beforeEach(() => {
+    vi.mocked(updateSession).mockReset();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("registers both areas in the matcher and keeps the evaluation entries", () => {
+    expect(config.matcher).toEqual(
+      expect.arrayContaining([
+        "/evaluacion-docente-admin/:path*",
+        "/api/evaluacion-docente-admin/:path*",
+        "/admisiones-admin/:path*",
+        "/api/admisiones-admin/:path*",
+      ])
+    );
+  });
+
+  describe("pages", () => {
+    it.each([ADMISSIONS_PAGE, "/admisiones-admin"])(
+      "redirects a visitor without a session away from %s",
+      async (pathname) => {
+        const { rpc } = admissionsSessionWith(null);
+
+        const result = await middleware(requestTo(pathname));
+
+        expect(result.status).toBe(307);
+        expect(result.headers.get("location")).toBe(ADMISSIONS_LOGIN_URL);
+        expect(rpc).not.toHaveBeenCalled();
+      }
+    );
+
+    it.each([ADMISSIONS_PAGE, "/admisiones-admin"])(
+      "redirects a user without a role away from %s",
+      async (pathname) => {
+        admissionsSessionWith(STAFF, null);
+
+        const result = await middleware(requestTo(pathname));
+
+        expect(result.status).toBe(307);
+        expect(result.headers.get("location")).toBe(ADMISSIONS_LOGIN_URL);
+      }
+    );
+
+    it.each(["admin", "admissions_manager", "admissions_agent", "admissions_viewer"])(
+      "lets role %s through with the refreshed session response",
+      async (role) => {
+        const { response, rpc } = admissionsSessionWith(STAFF, role);
+
+        const result = await middleware(requestTo(ADMISSIONS_PAGE));
+
+        expect(result).toBe(response);
+        expect(rpc).toHaveBeenCalledWith("admissions_current_role");
+      }
+    );
+
+    it("treats a failed role lookup as no access", async () => {
+      const { rpc } = admissionsSessionWith(STAFF, null);
+      rpc.mockResolvedValue({ data: "admin", error: { code: "PGRST301" } });
+
+      const result = await middleware(requestTo(ADMISSIONS_PAGE));
+
+      expect(result.headers.get("location")).toBe(ADMISSIONS_LOGIN_URL);
+    });
+  });
+
+  describe("APIs", () => {
+    it("answers 401 JSON without a session and looks up no role", async () => {
+      const { rpc } = admissionsSessionWith(null);
+
+      const result = await middleware(requestTo(ADMISSIONS_API));
+
+      expect(result.status).toBe(401);
+      expect(await result.json()).toEqual({ error: "No autenticado" });
+      expect(rpc).not.toHaveBeenCalled();
+    });
+
+    it.each([null, "superuser"])("answers 403 JSON for role %s", async (role) => {
+      admissionsSessionWith(STAFF, role);
+
+      const result = await middleware(requestTo(ADMISSIONS_API));
+
+      expect(result.status).toBe(403);
+      expect(await result.json()).toEqual({ error: "No autorizado" });
+    });
+
+    it("lets a role through with the refreshed session response", async () => {
+      const { response } = admissionsSessionWith(STAFF, "admissions_viewer");
+
+      const result = await middleware(requestTo(ADMISSIONS_API));
+
+      expect(result).toBe(response);
+    });
+
+    it("gates the API root as well", async () => {
+      admissionsSessionWith(null);
+
+      const result = await middleware(requestTo("/api/admisiones-admin"));
+
+      expect(result.status).toBe(401);
+    });
+  });
+
+  describe("session cookies on denial", () => {
+    it.each([
+      ["the no-session redirect", ADMISSIONS_PAGE, null, null],
+      ["the no-role redirect", ADMISSIONS_PAGE, STAFF, null],
+      ["the 401", ADMISSIONS_API, null, null],
+      ["the 403", ADMISSIONS_API, STAFF, null],
+    ])("keeps refreshed cookies on %s", async (_label, pathname, user, role) => {
+      admissionsSessionWith(user, role).response.cookies.set("sb-token", "rotated");
+
+      const result = await middleware(requestTo(pathname));
+
+      expect(result.cookies.get("sb-token")?.value).toBe("rotated");
+    });
+  });
+
+  describe("exemptions", () => {
+    it.each(["/admisiones-admin/login", "/api/admisiones-admin/login"])(
+      "does not gate %s, so a user without a role cannot loop",
+      async (pathname) => {
+        const result = await middleware(requestTo(pathname));
+
+        expect(updateSession).not.toHaveBeenCalled();
+        expect(result.status).toBe(200);
+        expect(result.headers.get("location")).toBeNull();
+      }
+    );
+
+    describe("logout API", () => {
+      const LOGOUT_API = "/api/admisiones-admin/logout";
+      const logoutRequest = () => new NextRequest(`${ORIGIN}${LOGOUT_API}`, { method: "POST" });
+
+      it.each([
+        ["no session", null, { data: null, error: null }],
+        ["no role", STAFF, { data: null, error: null }],
+        ["a failed role lookup", STAFF, { data: null, error: { code: "PGRST301" } }],
+      ])("lets a caller with %s through, without a role lookup", async (_label, user, rpcResult) => {
+        const { rpc } = admissionsSessionWith(user);
+        rpc.mockResolvedValue(rpcResult);
+
+        const result = await middleware(logoutRequest());
+
+        expect(result.status).toBe(200);
+        expect(result.headers.get("x-middleware-next")).toBe("1");
+        expect(result.headers.get("location")).toBeNull();
+        expect(rpc).not.toHaveBeenCalled();
+        expect(updateSession).not.toHaveBeenCalled();
+      });
+
+      it.each([
+        ["a path below it", "/api/admisiones-admin/logout/otra", 401],
+        ["a longer sibling", "/api/admisiones-admin/logout-todo", 401],
+        ["the page path of the same name", "/admisiones-admin/logout", 307],
+      ])("still gates %s", async (_label, pathname, status) => {
+        admissionsSessionWith(null);
+
+        const result = await middleware(requestTo(pathname));
+
+        expect(updateSession).toHaveBeenCalledTimes(1);
+        expect(result.status).toBe(status);
+      });
+
+      it("still denies a user without a role on the routes next to it", async () => {
+        admissionsSessionWith(STAFF, null);
+
+        const result = await middleware(requestTo(ADMISSIONS_API));
+
+        expect(result.status).toBe(403);
+      });
+    });
+
+    it.each(["/admisiones-admin/login/otra", "/api/admisiones-admin/login/otra"])(
+      "does not exempt %s, which is below the login path",
+      async (pathname) => {
+        admissionsSessionWith(null);
+
+        await middleware(requestTo(pathname));
+
+        expect(updateSession).toHaveBeenCalledTimes(1);
+      }
+    );
+
+    it.each([
+      "/admisiones-2027",
+      "/admisiones",
+      "/admisiones-administracion",
+      "/admisiones-admin-extra",
+      "/api/admissions",
+      "/api/admisiones-admin-extra",
+      "/",
+    ])("does not touch %s", async (pathname) => {
+      const result = await middleware(requestTo(pathname));
+
+      expect(updateSession).not.toHaveBeenCalled();
+      expect(result.status).toBe(200);
+      expect(result.headers.get("location")).toBeNull();
+    });
+
+    it("does not touch the public POST to /api/admissions", async () => {
+      const request = new NextRequest(`${ORIGIN}/api/admissions`, { method: "POST", body: "{}" });
+
+      const result = await middleware(request);
+
+      expect(updateSession).not.toHaveBeenCalled();
+      expect(result.status).toBe(200);
+    });
   });
 });

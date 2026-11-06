@@ -2,7 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
- * Refreshes the Supabase auth session cookies and returns the current user (if any).
+ * Refreshes the Supabase auth session cookies and returns the current user (if any),
+ * along with the session-bound client for follow-up queries in the same request.
  * Follows @supabase/ssr's documented Next.js middleware recipe: always use
  * supabase.auth.getUser() here, never getSession() (it doesn't revalidate the token).
  */
@@ -32,5 +33,5 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return { response, user };
+  return { response, user, supabase };
 }
