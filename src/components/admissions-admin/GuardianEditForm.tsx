@@ -58,6 +58,8 @@ const GuardianEditForm = ({ detail, onCancel, onSaved, onLeave, onDirtyChange }:
   const isDirty = Object.keys(patch).length > 0;
 
   useEffect(() => onDirtyChange(isDirty), [isDirty, onDirtyChange]);
+  // A closed form has nothing left to save, whatever closed it.
+  useEffect(() => () => onDirtyChange(false), [onDirtyChange]);
 
   useEffect(() => {
     nameRef.current?.querySelector("input")?.focus();
