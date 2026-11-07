@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import styles from "@/components/admissions-admin/AdmissionsAdmin.module.scss";
+import { UnsavedChangesProvider } from "@/components/admissions-admin/UnsavedChangesGuard";
 import AdmisionesAdminSidebarMenu from "./sidebar/AdmisionesAdminSidebarMenu";
 
 interface AdmisionesAdminLayoutProps {
@@ -34,10 +35,13 @@ const AdmisionesAdminLayout = ({ title, description, children }: AdmisionesAdmin
         <div className="container">
           <div className="bd-dashboard-main">
             <div className="row gy-30">
-              <AdmisionesAdminSidebarMenu />
-              <main id={MAIN_CONTENT_ID} tabIndex={-1} className="col-xl-9 col-lg-9 col-md-8">
-                {children}
-              </main>
+              {/* Lets the sidebar ask before leaving a record with unsaved changes. */}
+              <UnsavedChangesProvider>
+                <AdmisionesAdminSidebarMenu />
+                <main id={MAIN_CONTENT_ID} tabIndex={-1} className="col-xl-9 col-lg-9 col-md-8">
+                  {children}
+                </main>
+              </UnsavedChangesProvider>
             </div>
           </div>
         </div>

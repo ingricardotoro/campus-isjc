@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import {
+  isPlainClick,
+  useUnsavedChangesGuard,
+} from "@/components/admissions-admin/UnsavedChangesGuard";
 import { ADMIN_HOME_PATH, useAdmissionsLogout } from "@/components/admissions-admin/useAdmissionsLogout";
 
 const MENU_ITEMS = [
@@ -17,7 +21,21 @@ function isActive(pathname: string, href: string, exact: boolean) {
 
 const AdmisionesAdminSidebarMenu = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { logout, isLoggingOut } = useAdmissionsLogout();
+  const { requestLeave } = useUnsavedChangesGuard();
+
+  // With unsaved changes on the page, both ways out wait for the page's confirmation.
+  const handleLinkClick = (href: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!isPlainClick(event)) return;
+    if (requestLeave({ proceedLabel: "Salir sin guardar", proceed: () => router.push(href) })) {
+      event.preventDefault();
+    }
+  };
+
+  const handleLogout = () => {
+    if (!requestLeave({ proceedLabel: "Cerrar sesión sin guardar", proceed: logout })) logout();
+  };
 
   return (
     <div className="col-xl-3 col-lg-3 col-md-4">
@@ -31,6 +49,7 @@ const AdmisionesAdminSidebarMenu = () => {
                 <Link
                   href={href}
                   className={active ? "active" : ""}
+                  onClick={handleLinkClick(href)}
                   aria-current={pathname === href ? "page" : active ? "true" : undefined}
                 >
                   <span aria-hidden="true">
@@ -48,7 +67,7 @@ const AdmisionesAdminSidebarMenu = () => {
           <li>
             <button
               type="button"
-              onClick={logout}
+              onClick={handleLogout}
               disabled={isLoggingOut}
               className="border-0 bg-transparent p-0 w-100 text-start"
             >

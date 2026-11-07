@@ -1,8 +1,10 @@
 // Client fetch for the admissions admin APIs. It turns every answer into one of a few
 // outcomes the pages can render: data, sign in again, no access, or an error to retry.
 
+import { CONNECTION_ERROR } from "@/lib/admissions/admin-record-state";
+
+export { CONNECTION_ERROR };
 export const DEFAULT_LOAD_ERROR = "No se pudieron cargar los datos.";
-export const CONNECTION_ERROR = "Error de conexión. Revise su red e intente de nuevo.";
 
 export type AdminFetchResult<T> =
   | { kind: "ok"; data: T }

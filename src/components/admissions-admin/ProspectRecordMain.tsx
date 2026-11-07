@@ -4,14 +4,15 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import type { AdmissionsAdminCatalogs, ProspectDetail } from "@/lib/admissions/admin-queries";
+import type { AdmissionsAdminCatalogs } from "@/lib/admissions/admin-queries";
+import { type AdmissionsMe, LIST_QUERY_PARAM, backToListHref } from "@/lib/admissions/admin-record";
 import {
-  type AdmissionsMe,
-  LIST_QUERY_PARAM,
-  backToListHref,
-  interpretDetailResponse,
-} from "@/lib/admissions/admin-record";
-import { CONNECTION_ERROR, fetchAdminJson, requestAdmin } from "./admin-fetch";
+  type RecordLoad,
+  type RecordPageState,
+  afterSaveStep,
+  resolveRecordLoad,
+} from "@/lib/admissions/admin-record-state";
+import { fetchAdminJson, requestAdmin } from "./admin-fetch";
 import { EmptyState, ErrorState, LoadingState, NoAccessState } from "./AdminStates";
 import styles from "./AdmissionsAdmin.module.scss";
 import DeleteProspectSection from "./DeleteProspectSection";
@@ -26,14 +27,10 @@ import {
   prospectRows,
 } from "./ProspectRecordView";
 import { type LeaveOutcome, useBeforeUnloadWarning } from "./RecordFormParts";
+import { isPlainClick, useReportUnsavedChanges, useUnsavedChangesGuard } from "./UnsavedChangesGuard";
 import { ADMIN_LOGIN_PATH } from "./useAdmissionsLogout";
 
-type PageState =
-  | { kind: "loading" }
-  | { kind: "ready"; detail: ProspectDetail; me: AdmissionsMe }
-  | { kind: "error"; message: string }
-  | { kind: "not-found" }
-  | { kind: "no-access" };
+type PageState = { kind: "loading" } | RecordPageState;
 
 type CatalogState =
   | { kind: "idle" }
@@ -48,24 +45,15 @@ const SAVED_MESSAGES: Record<Section, string> = {
   guardian: "Los datos del encargado se guardaron.",
 };
 
-/** Loads the record and the current role together. Null means the page already moved on. */
-async function loadRecord(
-  id: string,
-  signal?: AbortSignal
-): Promise<Exclude<PageState, { kind: "loading" }> | "login" | null> {
+const CLOSED_EDITORS: Record<Section, boolean> = { prospect: false, guardian: false };
+
+/** Loads the record and the current role together; `resolveRecordLoad` combines the answers. */
+async function loadRecord(id: string, signal?: AbortSignal): Promise<RecordLoad> {
   const [detail, me] = await Promise.all([
     requestAdmin(`/api/admisiones-admin/prospects/${id}`, { signal }),
     fetchAdminJson<AdmissionsMe>("/api/admisiones-admin/me", { signal }),
   ]);
-  if (detail.kind === "aborted" || me.kind === "aborted") return null;
-  if (detail.kind === "network") return { kind: "error", message: CONNECTION_ERROR };
-
-  const outcome = interpretDetailResponse(detail.status, detail.body);
-  if (outcome.kind === "login" || me.kind === "unauthenticated") return "login";
-  if (outcome.kind === "no-access" || me.kind === "forbidden") return { kind: "no-access" };
-  if (outcome.kind !== "ok") return outcome;
-  if (me.kind === "error") return { kind: "error", message: me.message };
-  return { kind: "ready", detail: outcome.data, me: me.data };
+  return resolveRecordLoad(detail, me);
 }
 
 const ProspectRecordMain = ({ id }: { id: string }) => {
@@ -77,16 +65,14 @@ const ProspectRecordMain = ({ id }: { id: string }) => {
   const [catalogs, setCatalogs] = useState<CatalogState>({ kind: "idle" });
   const [reloadKey, setReloadKey] = useState(0);
   const [catalogReloadKey, setCatalogReloadKey] = useState(0);
-  const [editing, setEditing] = useState<Record<Section, boolean>>({
-    prospect: false,
-    guardian: false,
-  });
-  const [dirty, setDirty] = useState<Record<Section, boolean>>({ prospect: false, guardian: false });
+  const [editing, setEditing] = useState<Record<Section, boolean>>(CLOSED_EDITORS);
+  const [dirty, setDirty] = useState<Record<Section, boolean>>(CLOSED_EDITORS);
   const [savedMessage, setSavedMessage] = useState<Record<Section, string>>({
     prospect: "",
     guardian: "",
   });
-  const [leaveWarning, setLeaveWarning] = useState(false);
+  const { pendingLeave, requestLeave, cancelLeave, confirmLeave } = useUnsavedChangesGuard();
+  const leaveNoticeRef = useRef<HTMLDivElement>(null);
   const editButtonRefs = useRef<Record<Section, HTMLButtonElement | null>>({
     prospect: null,
     guardian: null,
@@ -94,16 +80,29 @@ const ProspectRecordMain = ({ id }: { id: string }) => {
 
   const hasUnsavedChanges = dirty.prospect || dirty.guardian;
   useBeforeUnloadWarning(hasUnsavedChanges);
+  useReportUnsavedChanges(hasUnsavedChanges);
+
+  // The confirmation can come from the sidebar, far from this notice: move focus to it.
+  useEffect(() => {
+    if (pendingLeave) leaveNoticeRef.current?.focus();
+  }, [pendingLeave]);
 
   const canEdit = page.kind === "ready" && page.me.canEdit;
+
+  // Edits that can no longer be saved are dropped, so nothing warns about them any more.
+  const leaveRecord = useCallback((next: Exclude<RecordPageState, { kind: "ready" }>) => {
+    setEditing(CLOSED_EDITORS);
+    setDirty(CLOSED_EDITORS);
+    setPage(next);
+  }, []);
 
   // Record and role.
   useEffect(() => {
     const controller = new AbortController();
     setPage({ kind: "loading" });
     loadRecord(id, controller.signal).then((result) => {
-      if (result === null) return;
-      if (result === "login") router.replace(ADMIN_LOGIN_PATH);
+      if (result.kind === "aborted") return;
+      if (result.kind === "login") router.replace(ADMIN_LOGIN_PATH);
       else setPage(result);
     });
     return () => controller.abort();
@@ -119,12 +118,12 @@ const ProspectRecordMain = ({ id }: { id: string }) => {
     }).then((result) => {
       if (result.kind === "aborted") return;
       if (result.kind === "unauthenticated") router.replace(ADMIN_LOGIN_PATH);
-      else if (result.kind === "forbidden") setPage({ kind: "no-access" });
+      else if (result.kind === "forbidden") leaveRecord({ kind: "no-access" });
       else if (result.kind === "error") setCatalogs({ kind: "error", message: result.message });
       else setCatalogs({ kind: "ready", data: result.data });
     });
     return () => controller.abort();
-  }, [canEdit, catalogReloadKey, router]);
+  }, [canEdit, catalogReloadKey, router, leaveRecord]);
 
   const onProspectDirty = useCallback(
     (value: boolean) =>
@@ -146,38 +145,34 @@ const ProspectRecordMain = ({ id }: { id: string }) => {
 
   const openEditor = (section: Section) => {
     setSavedMessage((previous) => ({ ...previous, [section]: "" }));
-    setLeaveWarning(false);
+    cancelLeave();
     setEditing((previous) => ({ ...previous, [section]: true }));
   };
 
   const handleLeave = (outcome: LeaveOutcome) => {
     if (outcome === "login") router.replace(ADMIN_LOGIN_PATH);
-    else if (outcome === "no-access") setPage({ kind: "no-access" });
-    else setPage({ kind: "not-found" });
+    else leaveRecord({ kind: outcome });
   };
 
   // After a save the view shows the record as the database now holds it. The form keeps its
   // saving state until the fresh copy arrives, then closes.
   const handleSaved = async (section: Section) => {
-    const result = await loadRecord(id);
-    if (result === null) return;
-    if (result === "login") return router.replace(ADMIN_LOGIN_PATH);
+    const step = afterSaveStep(await loadRecord(id));
+    if (step.kind === "ignore") return;
+    if (step.kind === "login") return router.replace(ADMIN_LOGIN_PATH);
+    if (step.kind === "leave") return leaveRecord(step.page);
+
     closeEditor(section);
-    if (result.kind === "ready") {
-      setPage(result);
-      setSavedMessage((previous) => ({ ...previous, [section]: SAVED_MESSAGES[section] }));
-    } else if (result.kind === "error") {
-      setSavedMessage((previous) => ({ ...previous, [section]: SAVED_MESSAGES[section] }));
-      toast.error("Los cambios se guardaron, pero no se pudo actualizar la vista. Recargue la página.");
-    } else {
-      setPage(result);
-    }
+    setSavedMessage((previous) => ({ ...previous, [section]: SAVED_MESSAGES[section] }));
+    if (step.kind === "show") setPage(step.page);
+    else toast.error(step.toast);
   };
 
   const handleBack = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!hasUnsavedChanges) return;
-    event.preventDefault();
-    setLeaveWarning(true);
+    if (!isPlainClick(event)) return;
+    if (requestLeave({ proceedLabel: "Salir sin guardar", proceed: () => router.push(listHref) })) {
+      event.preventDefault();
+    }
   };
 
   const backLink = (
@@ -263,20 +258,16 @@ const ProspectRecordMain = ({ id }: { id: string }) => {
     <div className="bd-dashboard-inner">
       {backLink}
 
-      {leaveWarning && hasUnsavedChanges && (
-        <div className={`mt-15 ${styles.notice}`} role="alert">
+      {pendingLeave && hasUnsavedChanges && (
+        <div ref={leaveNoticeRef} tabIndex={-1} className={`mt-15 ${styles.notice}`} role="alert">
           <p className="mb-10">Tiene cambios sin guardar. Si sale ahora, se perderán.</p>
           <div className={styles.formActions}>
-            <button
-              type="button"
-              className="bd-btn btn-primary"
-              onClick={() => setLeaveWarning(false)}
-            >
+            <button type="button" className="bd-btn btn-primary" onClick={cancelLeave}>
               Seguir editando
             </button>
-            <Link href={listHref} className="bd-btn btn-outline-primary">
-              Salir sin guardar
-            </Link>
+            <button type="button" className="bd-btn btn-outline-primary" onClick={confirmLeave}>
+              {pendingLeave.proceedLabel}
+            </button>
           </div>
         </div>
       )}

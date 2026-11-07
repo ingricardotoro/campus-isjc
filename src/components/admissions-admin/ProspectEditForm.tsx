@@ -60,6 +60,8 @@ const ProspectEditForm = ({ detail, catalogs, onCancel, onSaved, onLeave, onDirt
   const isDirty = Object.keys(patch).length > 0;
 
   useEffect(() => onDirtyChange(isDirty), [isDirty, onDirtyChange]);
+  // A closed form has nothing left to save, whatever closed it.
+  useEffect(() => () => onDirtyChange(false), [onDirtyChange]);
 
   useEffect(() => {
     firstFieldRef.current?.querySelector("select")?.focus();

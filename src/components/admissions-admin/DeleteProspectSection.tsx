@@ -3,12 +3,9 @@
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  DELETE_CONFIRMATION_WORD,
-  confirmationMatches,
-  interpretDeleteResponse,
-} from "@/lib/admissions/admin-record";
-import { CONNECTION_ERROR, requestAdmin } from "./admin-fetch";
+import { DELETE_CONFIRMATION_WORD, confirmationMatches } from "@/lib/admissions/admin-record";
+import { finishDelete, startDelete } from "@/lib/admissions/admin-record-state";
+import { requestAdmin } from "./admin-fetch";
 import styles from "./AdmissionsAdmin.module.scss";
 import { ADMIN_LOGIN_PATH } from "./useAdmissionsLogout";
 
@@ -30,6 +27,8 @@ const DeleteProspectSection = ({ prospectId, studentLabel, listHref }: Props) =>
   const [confirmation, setConfirmation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  // Guards a second submit that arrives before the disabled controls render.
+  const inFlightRef = useRef(false);
 
   // showModal focuses the first focusable control, which is the confirmation input.
   const open = () => {
@@ -45,36 +44,28 @@ const DeleteProspectSection = ({ prospectId, studentLabel, listHref }: Props) =>
     if (isDeleting) event.preventDefault();
   };
 
-  const leave = (message: string) => {
-    toast.success(message);
-    router.replace(listHref);
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isDeleting) return;
-    if (!confirmationMatches(confirmation)) {
-      setError(`Escriba ${DELETE_CONFIRMATION_WORD} para confirmar.`);
-      return;
-    }
+    const start = startDelete(inFlightRef.current, confirmation);
+    if (start.kind === "ignore") return;
+    if (start.kind === "invalid") return setError(start.message);
 
+    inFlightRef.current = true;
     setIsDeleting(true);
     setError(null);
     const result = await requestAdmin(`/api/admisiones-admin/prospects/${prospectId}`, {
       method: "DELETE",
     });
-    if (result.kind !== "response") {
-      setIsDeleting(false);
-      setError(CONNECTION_ERROR);
-      return;
-    }
 
-    const outcome = interpretDeleteResponse(result.status);
-    if (outcome.kind === "deleted") return leave("La solicitud se eliminó.");
-    if (outcome.kind === "already-deleted") return leave("La solicitud ya había sido eliminada.");
-    if (outcome.kind === "login") return router.replace(ADMIN_LOGIN_PATH);
+    const finish = finishDelete(result, listHref);
+    if (finish.kind === "leave") {
+      toast.success(finish.message);
+      return router.replace(finish.href);
+    }
+    if (finish.kind === "login") return router.replace(ADMIN_LOGIN_PATH);
+    inFlightRef.current = false;
     setIsDeleting(false);
-    setError(outcome.message);
+    setError(finish.message);
   };
 
   const matches = confirmationMatches(confirmation);
